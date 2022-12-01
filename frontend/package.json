@@ -1,0 +1,27 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel public/index.html --dist-dir ../backend/public",
+    "build": "parcel build public/index.html --dist-dir ../backend/public"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@ant-design/icons": "^4.8.0",
+    "antd": "^5.0.1",
+    "parcel": "^2.8.0",
+    "react": "^18.2.0",
+    "react-router": "^6.4.3",
+    "react-router-dom": "^6.4.3"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.13",
+    "postcss": "^8.4.19",
+    "process": "^0.11.10",
+    "tailwindcss": "^3.2.4"
+  }
+}
