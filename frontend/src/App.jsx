@@ -9,6 +9,8 @@ import {
     Navigate,
 } from "react-router-dom";
 import MenuDrawer from './components/MenuDrawer';
+import CrearSolicitud from './views/CrearSolicitud';
+import MisSolicitudes from './views/MisSolicitudes';
 
 
 const App = () => {
@@ -20,6 +22,8 @@ const App = () => {
                     <Routes>
                         <Route path='/' element={<Loguer />}></Route>
                         <Route path='/inicio' element={<Inicio />}></Route>
+                        <Route path='/CrearSolicitud' element={<CrearSolicitud />}></Route>
+                        <Route path='/MisSolicitudes' element={<MisSolicitudes />}></Route>
                     </Routes>
                 </div>
             </div>
