@@ -17,7 +17,7 @@ const MenuDrawer = () => {
             />
             <Link to={'/inicio'}>
                 <div className=' flex hover:bg-cyan-800 shadow-xl hover:shadow-2xl cursor-pointer transition duration-300 rounded-xl 
-                    mt-12 p-3 mr-5 ml-5 hover:font-bold'>
+                    mt-12 p-3 mr-5 ml-5 hover:font-bold '>
                     <HomeOutlined
                         style={{ fontSize: '32px', color: "white" }} />
                     <h1 className='text-center mt-2 ml-3 text-white'>Inicio</h1>

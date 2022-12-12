@@ -1,3 +1,7 @@
 .bg-menudrawer {
     background-color: #00b086;
 }
+.bgcargando{
+    background-image: url('https://github.com/Davincho28/images/blob/main/Desktop%20-%2011.jpg?raw=true');
+    background-repeat: no-repeat;
+}

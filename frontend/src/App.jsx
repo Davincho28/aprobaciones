@@ -16,14 +16,15 @@ import MisSolicitudes from './views/MisSolicitudes';
 const App = () => {
     return (
         <Router>
-            <div className='max-h-screen'>
-                <div className="grid md:grid-cols-4 grid-cols-2">
+            <div className='max-h-screen overflow-hidden'>
+                <div className="grid md:grid-cols-4 grid-cols-2 h-full">
                     <MenuDrawer />
                     <Routes>
                         <Route path='/' element={<Loguer />}></Route>
                         <Route path='/inicio' element={<Inicio />}></Route>
                         <Route path='/CrearSolicitud' element={<CrearSolicitud />}></Route>
                         <Route path='/MisSolicitudes' element={<MisSolicitudes />}></Route>
+                        <Route path="*" element={<Navigate to={"/"}></Navigate>} />
                     </Routes>
                 </div>
             </div>
