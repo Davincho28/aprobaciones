@@ -1,0 +1,60 @@
+//<script type="text/jsx">
+
+function CamposDependencias({ props }) {
+    const { el } = props;
+    const [tipoDato, setTipoDato] = useState({ format: "" });
+    const [enumField, setEnumField] = useState()
+
+    return (
+        <div className="text-white" key={el}>
+            <h2 className="mb-2">Agregar dependencia de {el}</h2>
+            <label className="text-white">Tipo de dato de la dependencia {" "}
+                <select
+                    className="border p-2 rounded-md text-black w-full"
+                    name="tipoDatoDependencia"
+                    onChange={e => {
+                        const [tipo, formato] = e.target.value.split(";");
+                        setTipoDato({ ...tipoDato, type: tipo, format: formato })
+                    }}
+                >
+                    <option value="string" >texto</option>
+                    <option value="number" >numerico</option>
+                    <option value="string;email" >correo</option>
+                    <option value="string;uri" >url</option>
+                    <option value="string;date" >fecha</option>
+                    <option value="string;date-time" >fecha y hora</option>
+                    <option value="string;option">selector</option>
+                    <option value="string;array">casillas de verificación</option>
+
+                </select>
+
+                {(tipoDato.format == "option" || tipoDato.format == "array") &&
+                    <div>
+                        <span>Nota: ingresar las opciones separadas por una coma. Ejempo: opción 1, opción 2, etc...</span>
+                        <br />
+                        <input
+                            value={enumField}
+                            onChange={e => setEnumField(e.target.value)}
+                            placeholder="parametros"
+                            className="border p-2 rounded-md text-black w-full focus:outline-none w-full" />
+                    </div>
+                }
+            </label>
+
+            {(tipoDato.format == "option" || tipoDato.format == "array") &&
+                <div>
+                    <span>Nota: ingresar las opciones separadas por una coma. Ejempo: opción 1, opción 2, etc...</span>
+                    <br />
+                    <input
+                        value={enumField}
+                        onChange={e => setEnumField(e.target.value)}
+                        placeholder="parametros"
+                        className="border p-2 rounded-md text-black w-full focus:outline-none" />
+                </div>
+            }
+        </div>
+    )
+}
+
+
+//</script>

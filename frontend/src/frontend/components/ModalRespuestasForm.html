@@ -1,0 +1,42 @@
+//<script type="text/jsx">
+
+const ModalRespuestasForm = ({ visible, setVisible, datos, setDatos }) => {
+    const resptform = JSON.parse(datos[7][13])
+    const preguntas = Object.keys(resptform)
+    const valores = Object.values(resptform)
+    return (
+        <div>
+            <Modal title="Respuestas formulario" centered visible={visible}
+                onCancel={() => {
+                    setVisible(false);
+                    setDatos(null);
+                }}
+                footer={[]}
+                destroyOnClose
+            >
+                <table className="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Pregunta</th>
+                            <th scope="col">Respuesta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            preguntas.map((preg, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <td>{preg}</td>
+                                        <td>{valores[index]}</td>
+                                    </tr>
+                                )
+                            })
+                        }
+                    </tbody>
+                </table>
+            </Modal>
+        </div >
+    )
+}
+
+//</script>

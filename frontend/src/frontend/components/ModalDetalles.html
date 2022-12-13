@@ -1,0 +1,64 @@
+//<script type="text/jsx">
+
+// componente que lista las solicutes realizadas en una tabla
+const ModalDetalles = ({ visible, setVisible, idSolicitud }) => {
+  const [estadoDetalleMiSolicitud, setEstadoDetalleMiSolicitud] = useState([""]);
+  const [lideresFasesEscalamiento, setLideresFasesEscalamiento] = useState([])
+
+  useEffect(() => {
+    const arrCorreos = [];
+    const arrLideres = [];
+
+
+    google.script.run
+      .withSuccessHandler(estadoMiSolicitud => {
+        setEstadoDetalleMiSolicitud(estadoMiSolicitud)
+      })
+      .misSolicitudes(idSolicitud);
+
+
+    google.script.run.withSuccessHandler(res => {
+      const obj = JSON.parse(res[0][6]);
+
+      for (const key in obj) {
+        if (Object.hasOwnProperty.call(obj, key)) {
+          const element = obj[key];
+          arrCorreos.push(element);
+        }
+      }
+
+      google.script.run.withSuccessHandler(res => {
+        setLideresFasesEscalamiento(res)
+      }).buscarUsuariosPorCorreo(arrCorreos);
+    }).verSolicitudesId(idSolicitud);
+
+
+  }, [])
+
+
+  return (
+    <Modal title="Progreso De Solicitud" centered visible={visible} onOk={() => setVisible(false)}
+      onCancel={() => setVisible(false)}
+      footer={[]}
+    >
+      <Steps direction="vertical" current={estadoDetalleMiSolicitud.length - 1}>
+        {estadoDetalleMiSolicitud[0] === ""
+          ?
+          <Step title="Cargando..." description="un momento por favor" icon={<LoadingOutlined />} />
+          : estadoDetalleMiSolicitud.map((detalleSolicitud, index) =>
+            <Step key={index} title={detalleSolicitud[1]} description={`Revisión de: ${detalleSolicitud[2]} la fecha: ${detalleSolicitud[3]}`} />
+          )}
+      </Steps>
+      <div>
+        <h2 className="font-bold text-blue-400">Lideres a escalar la solicitud</h2>
+        <ul>
+          {lideresFasesEscalamiento.length > 0
+            ? lideresFasesEscalamiento.map(usuario => <li>✔️ {usuario[1]} {usuario[2]}</li>)
+            : <li>Cargando...</li>
+          }
+        </ul>
+      </div>
+    </Modal>)
+}
+
+//</script>

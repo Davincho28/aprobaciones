@@ -1,0 +1,157 @@
+//<script type="text/jsx">
+const SolicitudesPendientes = () => {
+  //estados en react
+  const [listaUsuarios, setListaUsuarios] = useState([""]);
+  const [datosSolicitudes, setDatosSolicitudes] = useState([""]);
+  const [actualizarTabla, setActualizarTabla] = useState(0);
+  const [visible, setVisible] = useState(false);
+  const [visible2, setVisible2] = useState(false);
+  const [datos, setDatos] = useState(null);
+  const [state, setState] = useState({
+    searchText: '',
+    searchedColumn: '',
+  });
+
+
+  // el effect de react permite que cuando cambie un dato en la base de datos me renderize de nuevo la tabla
+  useEffect(() => {
+    // obteniendo informacion de usuarios con la api de google script run
+    google.script.run
+      // guardando en "listaUsuarios" los usuarios a mostrar en la tabla
+      .withSuccessHandler(res => setListaUsuarios(res))
+      .withFailureHandler(err => console.log(err))
+      .listaUsuarios();
+
+    // obteniendo informacion de solicitudes con la api de google script run
+    google.script.run
+      .withSuccessHandler(res => setDatosSolicitudes(res))
+      .withFailureHandler(err => console.log(err))
+      .verMisSolicitudesAsignadas();
+
+  }, [actualizarTabla])
+
+
+  let solicitudesPendientes = [];
+  let resptform = {}
+
+  datosSolicitudes.map((datos, index) => {
+    if (datos[13]) {
+      resptform = JSON.parse(datos[13])
+    }
+    solicitudesPendientes.push({
+      nombres: datos[1],
+      apellidos: datos[2],
+      tipoSolicitud: datos[12],
+      fechaSolicitud: datos[11],
+      tipoContrato: resptform['Tipo de contrato'],
+      numVacantes: resptform['Número de vacantes'],
+      salarioSugerido: resptform[' Salario sugerido que se le ofrecerá al candidato (Con base en el modelo de negocio, presupuesto del área, comportamiento del mercado, equidad interna en relación a las posiciones que ocupan este cargo. Nota: Si Gestión Humana encuentra que el salario no resulta ser competitivo le informará al solicitante para acordar una adecuada propuesta a los candidatos.'],
+      detalles:
+        <Button onClick={() => { setVisible(true); setDatos([datos[0], datos[1], datos[2], datos[3], datos[12], datos[11], datos[12], datos]) }}
+          style={{ backgroundColor: verdeClaro, color: "white", height: "32px", width: "86px" }}
+          className=""
+          key={datos[0] + index}
+          shape="round"
+          icon={
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform -translate-y-0.5 translate-x-3.5" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          }
+        >
+        </Button>,
+      respuestas:
+        <Button onClick={() => { setVisible2(true); setDatos([datos[0], datos[1], datos[2], datos[3], datos[12], datos[11], datos[12], datos]) }}
+          style={{ backgroundColor: verdeClaro, color: "white", height: "32px", width: "86px" }}
+          className=""
+          key={datos[0] + index}
+          shape="round"
+          icon={
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform -translate-y-0.5 translate-x-3.5" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          }
+        >
+        </Button>
+    })
+  })
+
+
+
+  // colunmas de la tabla
+  const columns = [
+    {
+      title: 'Nombres',
+      dataIndex: 'nombres',
+      ...getColumnSearchProps('nombres', state, setState)
+    },
+    {
+      title: 'Apellidos',
+      dataIndex: 'apellidos',
+      ...getColumnSearchProps('apellidos', state, setState)
+    },
+    {
+      title: 'Tipo de solicitud',
+      dataIndex: 'tipoSolicitud',
+      ...getColumnSearchProps('tipoSolicitud', state, setState)
+    },
+    {
+      title: 'Fecha de solicitud',
+      dataIndex: 'fechaSolicitud',
+      ...getColumnSearchProps('fechaSolicitud', state, setState)
+    },
+    {
+      title: 'Tipocontrato',
+      dataIndex: 'tipoContrato',
+      ...getColumnSearchProps('tipoContrato', state, setState)
+    },
+    {
+      title: 'Vacantes',
+      dataIndex: 'numVacantes',
+      ...getColumnSearchProps('numVacantes', state, setState)
+    },
+    {
+      title: 'SalarioSugerido',
+      dataIndex: 'salarioSugerido',
+      ...getColumnSearchProps('salarioSugerido', state, setState)
+    },
+    {
+      title: 'Detalles',
+      dataIndex: 'detalles'
+    },
+    {
+      title: 'Respuestas',
+      dataIndex: 'respuestas'
+    },
+  ];
+
+  return (
+    <div
+
+      className="py-10 px-5 sm:px-10 md:px-20 lg:px-40 min-h-screen overflow-x-auto">
+      <div className="min-w-max">
+
+        {!listaUsuarios[1]
+          ? <Spin size="large">
+            <Table columns={columns} />
+          </Spin>
+          :
+          <Table columns={columns} dataSource={solicitudesPendientes} pagination={{ position: ["bottomLeft"] }} />
+        }
+        {datos &&
+          <ModalEscalarSolicitud visible={visible} setVisible={setVisible} datos={datos} setDatos={setDatos}
+            actualizarTabla={actualizarTabla} setActualizarTabla={setActualizarTabla} />
+        }
+        {
+          visible2 == true &&
+          <ModalRespuestasForm visible={visible2} setVisible={setVisible2} datos={datos} setDatos={setDatos} />
+        }
+      </div>
+    </div>
+  )
+}
+
+//</script>

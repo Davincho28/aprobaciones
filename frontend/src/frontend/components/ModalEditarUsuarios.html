@@ -1,0 +1,100 @@
+//<script type="text/jsx">
+
+// modal para la edicion de los usuarios
+const ModalEditarUsuarios = ({ visible, setVisible, datos, setDatos, actualizarTabla, setActualizarTabla }) => {
+
+  const [initialValues, setInitialValues] = useState(
+    {
+      "identificacion": datos[0],
+      "nombres": datos[1],
+      "apellidos": datos[2],
+      "correo": datos[3],
+      "rol": datos[4]
+    }
+  )
+
+  const { listaRoles } = useContext(DataContext);
+
+  //limpieza de modal form
+  const formSucces = (datos) => {
+    // se actualiza correctamente y se muestra la notificación
+    notification.open({
+      message: 'Usuario actualizado correctamente',
+      description: 'En 3 segundos vera su cambio correctamente :D',
+    })
+    initialValues.correo == ""
+      ? google.script.run
+        .withSuccessHandler(() => setActualizarTabla(actualizarTabla + 1))
+        .guardarNuevoUsuario(datos)
+      : google.script.run
+        .withSuccessHandler(() => setActualizarTabla(actualizarTabla + 1))
+        .actualizarUsuarioRegistrado(datos)
+
+    // se oculta el modal y los datos del estado se vuelven a null
+    setVisible(false);
+    setDatos(null);
+  }
+
+  return (
+    <Modal title={initialValues.correo == "" ? "Crear usuario" : "Personalizar usuario"} centered visible={visible} onCancel={() => {
+      setVisible(false);
+      setDatos(null);
+    }
+    }
+      footer={[]}
+      destroyOnClose
+    >
+      <Form onFinish={formSucces} layout="vertical" autoComplete="off" initialValues={initialValues}>
+        <Item label="Identificación" name="identificacion" rules={[{
+          required: true,
+          message: 'Por favor ingrese su numero de documento'
+        }]}>
+          <Input type="number" />
+        </Item>
+
+        <Item label="Nombres" name="nombres" rules={[{ required: true, message: 'Por favor ingrese los nombres' }]}>
+          <Input />
+        </Item>
+
+        <Item label="Apellidos" name="apellidos" rules={[{ required: true, message: 'Por favor ingrese los apellidos' }]}>
+          <Input />
+        </Item>
+
+        <Item
+          label="Correo"
+          name="correo"
+          rules={[
+            { required: true, message: 'Por favor ingrese el correo' },
+            { type: "email", message: 'El formato no coincide con el de un correo valido' }
+          ]}>
+          {initialValues.correo == ""
+            ? < Input />
+            : <Input readOnly disabled />
+          }
+        </Item>
+
+        <Item label="Rol" name="rol" rules={[{ required: true, message: 'Por favor ingrese el rol' }]}>
+          <Select>
+            {listaRoles.map((e, index) => e !== "" && <Option key={index} value={e}>{e}</Option>)}
+          </Select>
+        </Item>
+
+        <Item className="text-center">
+          <Button
+            style={{ backgroundColor: verdeClaro, color: "white" }}
+            className="w-32"
+            htmlType="submit">
+            {initialValues.correo == ""
+              ? "Guardar"
+              : "Actualizar"
+            }
+          </Button>
+        </Item>
+
+      </Form>
+    </Modal>
+  )
+}
+
+
+//</script>

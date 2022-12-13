@@ -1,0 +1,18 @@
+//<script type="text/jsx">
+
+function LiderRoutes({ ...args }) {
+
+  const { auth } = useContext(DataContext);
+
+  return (
+    <Fragment>
+      {(auth.rol == "lider")
+        ? <Route {...args} />
+        : <Redirect to="/*" />
+      }
+    </Fragment>
+  )
+}
+
+
+  //</script>

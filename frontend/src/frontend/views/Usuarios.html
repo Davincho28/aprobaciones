@@ -1,0 +1,119 @@
+//<script type="text/jsx">
+// componente que lista las solicutes realizadas en una tabla
+const Usuarios = () => {
+  //variables globales
+  const { dominio } = useContext(DataContext)
+
+  //estados en react
+  const [listaUsuarios, setListaUsuarios] = useState([""]);
+  const [visible, setVisible] = useState(false);
+  const [datos, setDatos] = useState(null);
+  const [actualizarTabla, setActualizarTabla] = useState(0);
+  const [state, setState] = useState({
+    searchText: '',
+    searchedColumn: '',
+  });
+
+
+  // el effect de react permite que cuando cambie un dato en la base de datos me renderize de nuevo la tabla
+  useEffect(() => {
+    setListaUsuarios([""])
+    // obteniendo informacion de los usuarios con la api de google script run
+    google.script.run
+      // listando a los usuarios a mostrar en la tabla
+      .withSuccessHandler(res => setListaUsuarios(res))
+      .withFailureHandler(err => console.log(err))
+      .listaUsuarios();
+  }, [actualizarTabla])
+
+  // colunmas de la tabla
+  const columns = [
+    {
+      title: 'Identificación',
+      dataIndex: 'identificacion',
+      ...getColumnSearchProps('identificacion', state, setState)
+    },
+    {
+      title: 'Nombres',
+      dataIndex: 'nombres',
+      ...getColumnSearchProps('nombres', state, setState)
+    },
+    {
+      title: 'Apellidos',
+      dataIndex: 'apellidos',
+      ...getColumnSearchProps('apellidos', state, setState)
+    },
+    {
+      title: 'Correo',
+      dataIndex: 'correo',
+      ...getColumnSearchProps('correo', state, setState)
+    },
+    {
+      title: 'Rol',
+      dataIndex: 'rol',
+      ...getColumnSearchProps('rol', state, setState),
+      sorter: (a, b) => a.rol.length - b.rol.length
+    },
+    {
+      title: 'Detalles',
+      dataIndex: 'detalles'
+    },
+  ];
+
+  const data = [];
+  listaUsuarios.map((e, index) => {
+    (e[0] !== "" && index >= 0) &&
+      data.push({
+        identificacion: e[0],
+        nombres: e[1],
+        apellidos: e[2],
+        correo: e[3],
+        rol: e[4],
+        detalles:
+          <Button onClick={() => { setVisible(true); setDatos(e) }}
+            style={{ backgroundColor: verdeClaro, color: "white", height: "32px", width: "86px" }}
+            shape="round"
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform -translate-y-0.5 translate-x-3.5" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            }
+          >
+          </Button>
+      })
+  })
+
+  return (
+    <div
+      className="py-10 px-5 sm:px-10 md:px-20 lg:px-40 min-h-screen overflow-x-auto">
+      <Button onClick={() => { setVisible(true); setDatos(["", "", "", "", ""]) }}
+        style={{ backgroundColor: verdeClaro, color: "white", height: "40px", width: "60px", margin: "10px" }}
+        shape="round"
+        icon={
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+        }
+      >
+      </Button>
+
+      <div className="min-w-max">
+
+        {!listaUsuarios[0]
+          ? <Spin size="large">
+            <Table columns={columns} dataSource={data} />
+          </Spin>
+          :
+          <Table columns={columns} dataSource={data} pagination={{ position: ["bottomLeft"] }} />
+        }
+        {datos &&
+          <ModalEditarUsuarios visible={visible} setVisible={setVisible} datos={datos} setDatos={setDatos}
+            actualizarTabla={actualizarTabla} setActualizarTabla={setActualizarTabla} />}
+      </div>
+    </div>
+  )
+}
+
+//</script>

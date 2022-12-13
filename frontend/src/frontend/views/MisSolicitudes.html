@@ -1,0 +1,99 @@
+//<script type="text/jsx">
+
+function MisSolicitudes() {
+
+  //estados en react
+  const [datosSolicitudes, setDatosSolicitudes] = useState([""]);
+  const [correo, setCorreo] = useState("")
+  const [visible, setVisible] = useState(false);
+  const [idSolicitud, setIdSolicitud] = useState("");
+  const [state, setState] = useState({
+    searchText: '',
+    searchedColumn: '',
+  });
+
+
+  // El effect de react permite que cuando cambie un dato en la base de datos me renderize de nuevo la tabla
+  useEffect(() => {
+    //    obteniendo informacion de solicitudes con la api de google script run
+    google.script.run
+      .withSuccessHandler(res => setDatosSolicitudes(res))
+      .withFailureHandler(err => console.log(err))
+      .informacionSolicitudes();
+
+    //    obteniendo informacion del correo con la api de google script run
+    google.script.run.
+      withSuccessHandler(res => setCorreo(res))
+      .withFailureHandler(err => console.log(err))
+      .obtenerCorreo()
+  }, [])
+
+  const columns = [
+    {
+      title: 'Tipo de solicitud',
+      dataIndex: 'tipoSolicitud',
+      ...getColumnSearchProps('tipoSolicitud', state, setState),
+    },
+    {
+      title: 'Fecha de solicitud',
+      dataIndex: 'fechaSolicitud',
+    },
+    {
+      title: 'Detalles',
+      dataIndex: 'detalles',
+    },
+  ];
+  const data = [];
+  datosSolicitudes.map((solicitud, index) => {
+    (solicitud[0] !== "" && index > 0 && solicitud[0] == correo) &&
+      data.push({
+        tipoSolicitud: solicitud[2],
+        fechaSolicitud: solicitud[1],
+        detalles:
+          <Button
+            key={solicitud[4] + "*"}
+            //se pasa el id de la solicitud
+            onClick={() => {
+              setIdSolicitud(solicitud[4]);
+              setVisible(true);
+            }
+            }
+            style={{ backgroundColor: verdeClaro, color: "white", height: "32px", width: "89px" }}
+            className=""
+            shape="round"
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform -translate-y-0.5 translate-x-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>}
+          >
+          </Button>
+      })
+  })
+
+
+  return (
+    <div
+
+      className="py-10 px-5 sm:px-10 md:px-20 lg:px-40 min-h-screen overflow-x-auto" >
+      {visible && <ModalDetalles visible={visible} setVisible={setVisible} idSolicitud={idSolicitud} />}
+      <div className="min-w-max">
+        {datosSolicitudes[0] === ""
+          ? <Spin size="large" >
+            <Table
+              columns={columns} dataSource={data} />
+          </Spin>
+          : <Table bordered
+            columns={columns}
+            dataSource={data}
+            pagination={{ position: ["bottomLeft"] }}
+          />}
+
+      </div>
+    </div>
+  )
+}
+
+
+//</script>
+

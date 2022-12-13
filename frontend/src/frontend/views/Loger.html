@@ -1,0 +1,33 @@
+//<script type="text/jsx">
+const Loger = () => {
+
+    return (
+        <div className="h-screen">
+            <div className="border">
+                <div className="grid grid-cols-1 mt-20" >
+                    <div>
+                        <img
+                            className="mx-auto mt-10"
+                            src="https://servinformacion.com/wp-content/uploads/2020/10/LogoServinformacion-02-1-1024x302.png"
+                            width="300" height="300"
+                        />
+                    </div>
+                </div>
+                <div className="grid grid-cols-1">
+                    <div className="text-center">
+                        <h1 className="text-4xl text-blue-700 mt-3 hover:text-red-700">
+                            Estamos iniciando tu sesión...
+                        </h1>
+                        <Spin
+                            className="mt-10"
+                            tip="Loading..."
+                            size="large"
+                        />
+                    </div>
+                    <br />
+                </div>
+            </div>
+        </div>
+    )
+}
+//</script>

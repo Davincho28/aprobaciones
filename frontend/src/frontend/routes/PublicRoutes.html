@@ -1,0 +1,18 @@
+//<script type="text/jsx">
+
+function PublicRoutes({ ...args }) {
+
+  const { auth } = useContext(DataContext);
+
+  return (
+    <Fragment>
+      {auth.rol != ""
+        ? <Route {...args} />
+        : <Redirect to="/*" />
+      }
+    </Fragment>
+  )
+}
+
+
+  //</script>

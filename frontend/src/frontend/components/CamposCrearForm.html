@@ -1,0 +1,394 @@
+//<script type="text/jsx">
+
+const IMAGENES = [
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/Preguntas%20e%20inquietudes_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/Solicitud%20control%20de%20calidad.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitud%20certificado%20laboral_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitud%20de%20permisos.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitud%20cronograma%20de%20actividades%20generales_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitud%20informe%20de%20actualizaci%C3%B3n%20de%20datos_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitud%20ingresos%20y%20retenciones_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitud%20novedades%20en%20tu%20nomina_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitud%20traslado_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitud%20vacaciones_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitudes%20apoyo_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitudes%20de%20equipos%20laborales%20(%20electrodom%C3%A9sticos%2C%20etc).png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitudes%20informe%20capacitaciones_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitudes%20portafolio%20productos%20y%20servicios_.png',
+  'https://storage.cloud.google.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitudes%20%C3%A1rea%20de%20sistemas_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20men%C3%BA%20-02.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20men%C3%BA%20-03.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20men%C3%BA%20-04.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20men%C3%BA%20-05.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20men%C3%BA%20_Mesa%20de%20trabajo%201.png',
+
+]
+
+function CamposCrearForm({ newSchema, setNewSchema, setCampo, setTipoDato, tipoDato, crearNuevoForm,
+  setTitulo, titulo, enumField, setEnumField, campo, clickAgregarRegistro, jsonForm }) {
+
+  const { uiSchema, setUiSchema, dependencias, setDependencias } = useContext(DataContext)
+
+  const [eliminarCampo, setEliminarCampo] = useState({
+    state: false,
+    valueSelector: "",
+  });
+
+  const [emoticon, setEmoticon] = useState(undefined);
+
+  const [editarTitulo, setEditarTitulo] = useState({
+    state: false,
+    valueTitulo: ""
+  })
+
+  const [editarCampo, setEditarCampo] = useState({
+    state: false,
+    listaOptions: [],
+    valueSelector: "",
+    valueOptions: []
+  })
+
+  useEffect(() => {
+    let campo = [];
+    if (newSchema.properties) {
+      for (let key in newSchema.properties) {
+        campo.push([key.replaceAll("_", " "), key])
+      }
+    }
+
+    setEditarCampo({ ...editarCampo, listaOptions: campo });
+
+    setEnumField(editarCampo.valueOptions.toString());
+
+    setEditarTitulo({ ...editarTitulo, valueTitulo: newSchema.title })
+  }, [newSchema, editarCampo.valueOptions, eliminarCampo.valueOptions])
+
+
+
+  const actualizarRegistro = () => {
+    if (editarCampo.valueSelector == "") {
+      message.warning('debe seleccionar un campo a editar')
+    } else if (campo == "") {
+      message.warning('El nombre del campo no puede estar vacio')
+    } else {
+      const formulario = Object.assign({}, newSchema);
+      formulario.required = formulario.required.filter(e => e != editarCampo.valueSelector);
+      const json = JSON.stringify(formulario).split(`"${editarCampo.valueSelector}":`).join(`"${campo}":`);
+      // delete formulario.properties[editarCampo.valueSelector];
+      const newForm = JSON.parse(json);
+      newForm.properties[campo] = { ...jsonForm };
+      tipoDato.campoRequerido == "Si" && newForm.required.push(campo);
+
+      const widgetSchema = Object.assign({}, uiSchema);
+
+      delete widgetSchema[editarCampo.valueSelector];
+
+      newForm.properties[campo].type == "array"
+        ?
+        setUiSchema({
+          ...uiSchema,
+          [campo]: {
+            "ui:widget": "checkboxes"
+          },
+        })
+        : setUiSchema(widgetSchema);
+
+      setNewSchema(newForm);
+      // clickAgregarRegistro();
+      setEditarCampo({
+        ...editarCampo,
+        valueSelector: "",
+        valueOptions: []
+      });
+      setCampo("");
+    }
+  }
+
+
+
+  const cambiarTitulo = () => {
+    if (editarTitulo.valueTitulo === "") {
+      notification.warning({
+        message: 'Importante!',
+        description: 'El titulo no puede estar vacio',
+      })
+    } else {
+      setNewSchema({ ...newSchema, title: editarTitulo.valueTitulo })
+      setEditarTitulo({ ...editarTitulo, state: !editarTitulo.state })
+    }
+  }
+
+
+
+  const eliminarCampos = () => {
+    if (eliminarCampo.valueSelector == "") {
+      message.warning('debe seleccionar un campo a eliminar')
+    } else {
+      const formulario = Object.assign({}, newSchema);
+      if (formulario.required.includes(eliminarCampo.valueSelector)) {
+        formulario.required = formulario.required.filter(e => e != eliminarCampo.valueSelector);
+      } else {
+        formulario.required.push(eliminarCampo.valueSelector);
+        formulario.required = formulario.required.filter(e => e != eliminarCampo.valueSelector);
+      }
+
+      delete formulario.properties[eliminarCampo.valueSelector];
+      const widgetSchema = Object.assign({}, uiSchema);
+      delete widgetSchema[eliminarCampo.valueSelector];
+      setUiSchema(widgetSchema);
+      setNewSchema(formulario);
+      setEliminarCampo({ ...eliminarCampo, state: !eliminarCampo.state })
+    }
+  }
+
+  return (
+    <div>
+      {/* si el schema contiene título muestra los campos de creación del formulario */}
+      {newSchema.title
+        ?
+        <div className="grid grid-cols-1 gap-4">
+          {/* sección para modificar el título */}
+          <button
+            style={{ backgroundColor: verdeOscuro }}
+            className="p-2 rounded-md text-white mb-3"
+            onClick={() => setEditarTitulo({ valueTitulo: newSchema.title, state: !editarTitulo.state })}
+          >
+            {
+              editarTitulo.state
+                ? "Cancelar edicion del título"
+                : "Editar título del formulario"
+            }
+          </button>
+          {editarTitulo.state
+            &&
+            <Fragment>
+              <label className="text-white">Nuevo título:{" "}
+                <input
+                  className="border p-2 rounded-md text-black w-full focus:outline-none"
+                  type="text"
+                  value={editarTitulo.valueTitulo}
+                  onChange={(e) => setEditarTitulo({ ...editarTitulo, valueTitulo: e.target.value })}
+                />
+              </label>
+              <button
+                style={{ backgroundColor: verdeOscuro }}
+                className="p-2 rounded-md text-white mb-3"
+                onClick={cambiarTitulo}>
+                Actualizar título
+              </button>
+            </Fragment>
+          }
+
+
+          {/* sección para eliminar campos */}
+          <button
+            className="p-2 rounded-md text-white mb-3 bg-red-700"
+            onClick={() => setEliminarCampo({ ...eliminarCampo, state: !eliminarCampo.state })}
+          >
+            {
+              eliminarCampo.state
+                ? "Cancelar eliminación"
+                : "Eliminar campos"
+            }
+          </button>
+          {
+            eliminarCampo.state
+            &&
+            <Fragment>
+
+              <label className="text-white">Seleccione el campo a eliminar:
+                <select className="border p-2 rounded-md text-black w-full" onChange={e => setEliminarCampo({ ...eliminarCampo, valueSelector: e.target.value })}>
+                  <option value=""> -- seleccione -- </option>
+                  {editarCampo.listaOptions.map(e => <option value={e[1]}>{e[0]}</option>)}
+                </select>
+              </label>
+              <button
+                className="p-2 rounded-md text-white mb-3 bg-red-700"
+                onClick={eliminarCampos}
+              >
+                Confirmar eliminación
+              </button>
+            </Fragment>
+          }
+
+          {/* sección para la edición de los campos */}
+          <button
+            style={{ backgroundColor: verdeOscuro }}
+            className="p-2 rounded-md text-white mb-3"
+            onClick={() => setEditarCampo({
+              ...editarCampo, state: !editarCampo.state,
+              valueSelector: editarCampo.valueSelector && ""
+            })}>
+            {
+              editarCampo.state
+                ? "Cancelar edición"
+                : "Editar formulario"
+            }
+
+          </button>
+          {editarCampo.state &&
+            <label className="text-white">Seleccione el campo a editar: {" "}
+              <select className="border p-2 rounded-md text-black w-full" value={editarCampo.valueSelector} onChange={e => {
+                setEditarCampo({
+                  ...editarCampo,
+                  valueSelector: e.target.value,
+                  valueOptions: []
+                })
+
+                newSchema.properties[e.target.value].items
+                  && setEditarCampo({ ...editarCampo, valueOptions: newSchema.properties[e.target.value].items.enum, valueSelector: e.target.value })
+
+                newSchema.properties[e.target.value].enum
+                  && setEditarCampo({ ...editarCampo, valueOptions: newSchema.properties[e.target.value].enum, valueSelector: e.target.value })
+
+              }
+              }>
+                <option value=""> -- seleccione -- </option>
+                {editarCampo.listaOptions.map(e => <option value={e[1]}>{e[0]}</option>)}
+              </select>
+            </label>
+          }
+          <label className="text-white">Nombre del campo:{" "}
+            <input
+              className="border p-2 rounded-md text-black w-full focus:outline-none"
+              type="text"
+              value={campo}
+              onChange={(e) => setCampo(e.target.value)}
+            />
+          </label>
+
+          <label className="text-white">Tipo de dato {" "}
+            <select
+              className="border p-2 rounded-md text-black w-full"
+              name="tipoDato"
+              id="tipoDato"
+              onChange={e => {
+                const [tipo, formato] = e.target.value.split(";");
+                setTipoDato({ ...tipoDato, type: tipo, format: formato })
+              }}>
+              <option value="string" >texto</option>
+              <option value="number" >numerico</option>
+              <option value="string;email" >correo</option>
+              <option value="string;uri" >url</option>
+              <option value="string;date" >fecha</option>
+              <option value="string;date-time" >fecha y hora</option>
+              <option value="string;option">selector</option>
+              <option value="string;array">casillas de verificación</option>
+              <option value="string;dependencia">selector con dependencias</option>
+
+            </select>
+
+
+            {(tipoDato.format == "option" || tipoDato.format == "array" || tipoDato.format == "dependencia") &&
+              <div>
+                <span>Nota: ingresar las opciones separadas por una coma. Ejempo: opción 1, opción 2, etc...</span>
+                <br />
+                <input
+                  value={enumField}
+                  onChange={e => setEnumField(e.target.value)}
+                  placeholder="parametros"
+                  className="border p-2 rounded-md text-black w-full focus:outline-none" />
+              </div>
+            }
+          </label>
+
+          {
+            tipoDato.format == "dependencia" &&
+            enumField.split(",").map(el =>
+              <CamposDependencias key={el} props={{ el }} />)
+          }
+
+          <fieldset className="text-white">
+            <legend>Campo requerido? {" "}</legend>
+            <label className="mr-2">
+              <input
+                type="radio"
+                name="campoRequerido"
+                value="Si"
+                onChange={e => setTipoDato({ ...tipoDato, campoRequerido: e.target.value })}
+              />
+              Si
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="campoRequerido"
+                value="No"
+                onChange={e => setTipoDato({ ...tipoDato, campoRequerido: e.target.value })}
+              />
+              No
+            </label>
+          </fieldset>
+
+          <button
+            style={{ backgroundColor: verdeOscuro }}
+            className="p-2 rounded-md text-white"
+            onClick={() => {
+              editarCampo.state
+                ? actualizarRegistro()
+                : clickAgregarRegistro()
+            }}>
+            {editarCampo.state
+              ? "actualizar registro"
+              : "agregar registro"
+            }
+          </button>
+          <br />
+          <br />
+        </div>
+        :
+        <div>
+          <label style={{ color: 'white' }}>
+            Título para el formulario:
+          </label>
+          <input className="border mr-2 p-2 focus:outline-none rounded-md" type="text" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
+          <br />
+          <br />
+          <label style={{ color: 'white' }}>
+            Seleccione un Icono:
+          </label>
+          <br />
+
+          <div cols={1} class="rtf-box">
+            <tr>
+              <td>
+                <div class="rtf-tools">
+                  <div className="grid grid-cols-5">
+                    {IMAGENES.map((img, id) =>
+                      <img onClick={() => setEmoticon(img)} key={id} src={img} />)
+                    }
+                  </div>
+                </div>
+              </td>
+              <td>
+                {emoticon &&
+                  <img style={{ marginLeft: '8px', width: '50px', height: '50px' }} src={emoticon} alt="emoticon" />
+                }
+              </td>
+            </tr>
+          </div>
+
+          <div>
+            <button
+              style={{ backgroundColor: verdeOscuro }}
+              className="mt-3 p-2 rounded-md text-white"
+              onClick={() => {
+                if (emoticon) {
+                  crearNuevoForm(titulo, emoticon)
+                  setTitulo("");
+                  setEmoticon(undefined);
+                } else {
+                  message.warning("Debe seleccionar un emoticon y diligenciar el título")
+                }
+              }}>
+              Crear Formulario
+            </button>
+          </div>
+
+        </div>
+      }
+    </div >
+  )
+}
+//</script>
+

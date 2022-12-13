@@ -18,7 +18,7 @@ const App = () => {
         <Router>
             <div className='max-h-screen overflow-hidden'>
                 <div className="grid md:grid-cols-4 grid-cols-2 h-full">
-                    <MenuDrawer />
+                    {/* <MenuDrawer /> */}
                     <Routes>
                         <Route path='/' element={<Loguer />}></Route>
                         <Route path='/inicio' element={<Inicio />}></Route>

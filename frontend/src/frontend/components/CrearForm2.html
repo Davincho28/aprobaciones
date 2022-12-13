@@ -1,0 +1,104 @@
+//<script type="text/jsx">
+const CrearForm2 = ({ form }) => {
+
+  const [selecticon, setSelecticon] = useState("");
+  const [color, setColor] = useState("");
+
+  const { fasesEscalamiento, setFasesEscalamiento, listaLideres, dominio } = useContext(DataContext)
+
+  const recolectar = (e) => {
+    const button = document.getElementById("Enviar");
+    button.disabled = true;
+    if (selecticon == "") {
+      notification.error({
+        message: "Error",
+        description: "Debes seleccionar un icono"
+
+      });
+      button.disabled = false;
+    }
+    else {
+      e.fases_escalamiento = fasesEscalamiento.dataFasesEscalamiento
+      google.script.run
+        .withSuccessHandler((e) => { form.setViewform(e.vistaform), form.setEditform(e.idform), button.disabled = false })
+        .agregarformulario(e, selecticon)
+    }
+  }
+
+  return (
+    <div>
+      <Form
+        layout="vertical"
+        onFinish={recolectar}
+      >
+
+        <Item
+          label={<label style={{ color: "white" }}>Nombre del formulario</label>}
+          name="nameproyect"
+          style={{ color: "white" }}
+          rules={[
+            {
+              required: true,
+              message: <p style={{ color: colorblanco }}>*Porfavor Ingrese el nombre del formulario!</p>,
+            },
+          ]}
+        >
+          <Input type="text" className="form-control" size="large" />
+        </Item>
+
+        <Item
+          label={<label style={{ color: "white" }}>Descripcion</label>}
+          name="description"
+          rules={[
+            {
+              required: true,
+              message: <p style={{ color: colorblanco }}>*Porfavor Ingrese la descripcion del formulario!</p>,
+            },
+          ]}
+        >
+          <textarea cols="40" rows="4" className="form-control"></textarea>
+        </Item>
+
+        {fasesEscalamiento.verForm && <FasesEscalamiento />}
+
+
+        {/* Selecciona el icono */}
+        <div class="grid grid-cols-4 gap-4" style={{ background: "#237C83" }}>
+
+          {IMAGENES.map(imagen =>
+            <div key={imagen}>
+              <button type="button"
+                style={{ border: "solid 1px " + verdeClaro }}
+                className="hover:bg-blue-300"
+                onClick={() => setSelecticon(imagen)}
+              >
+                <img src={imagen} width="60" height="60" />
+              </button>
+            </div>)
+          }
+        </div>
+
+        <br></br>
+        {!fasesEscalamiento.verForm &&
+          <Item
+            wrapperCol={{
+              offset: 8,
+              span: 16,
+            }}
+          >
+            <Button type="primary" htmlType="submit" id="Enviar" style={{ background: colorDrawer }}>
+              Crear formulario
+            </Button>
+          </Item>}
+
+        <hr />
+        <br /><br />
+        <div>
+          {selecticon && <img src={selecticon} width="60" height="60" className="mx-auto" />}
+        </div>
+      </Form>
+
+    </div>
+  )
+}
+//</script>

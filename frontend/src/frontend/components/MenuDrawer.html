@@ -1,0 +1,226 @@
+//<script type="text/jsx">
+
+function MenuDrawer() {
+
+  const [visible, setVisible] = useState(false);
+  const [classNavLink] = useState("text-green hover:text-gray-600 text-base");
+  const [classActiveNavLink] = useState("border-b-2 text-blue hover:text-blue-500")
+
+  const { auth, setEditarFormulario } = useContext(DataContext)
+
+  const showDrawer = () => {
+    setVisible(true);
+  };
+  const onClose = () => {
+    setEditarFormulario({
+      newSchema: {},
+      uiSchema: {}
+    });
+    setVisible(false);
+  };
+
+  return (
+    <div className="absolute m-2">
+      <Popover
+        placement="rightTop"
+        content="Lista de servicios de la aplicación"
+        title="Abrir menú"
+        onClick={showDrawer}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6 text-white cursor-pointer"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke={verdeOscuro}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </Popover>
+      <Drawer
+        bodyStyle={{ backgroundColor: colorDrawer, color: "white" }}
+        placement="left"
+        closable={false}
+        onClose={onClose}
+        visible={visible}
+        width={350}
+      >
+        <div className="grid grid-cols-1 gap-5">
+
+          <div className="grid grid-cols-1 gap-5" >
+            <img className="rounded-lg mx-auto"
+              src="https://storage.googleapis.com/serv-appsscript/firmasAppScript/Recurso%203.png"
+              alt="imagen Servinformacion" width={250} />
+          </div >
+
+          <h2 className="text-white text-2xl mb-0">Menu</h2>
+
+          {
+            (auth.rol) &&
+
+            <NavLink
+              onClick={onClose}
+              className={classNavLink}
+              activeClassName={classActiveNavLink}
+              to="/inicio"
+              style={{ background: "white", borderRadius: "10px" }}
+            >
+              <tr>
+                <td>
+                  <img style={{ height: '57px' }}
+                    src={'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20men%C3%BA-06.png'}></img>
+                </td>
+                <td style={{
+                  verticalAlign: "middle", textAlign: "center", color: "#727781",
+                }}
+                >
+                  Inicio
+
+                </td>
+              </tr>
+            </NavLink>
+          }
+
+          {
+            (auth.rol) &&
+            <NavLink
+              onClick={onClose}
+              className={classNavLink}
+              activeClassName={classActiveNavLink}
+              to="/solicitudes"
+              style={{ background: "white", borderRadius: "10px" }}
+            >
+              <tr>
+                <td>
+                  <img style={{ height: '57px' }}
+                    src={'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20men%C3%BA%20_Mesa%20de%20trabajo%201.png'}></img>
+                </td>
+                <td style={{
+                  verticalAlign: "middle", textAlign: "center", color: "#727781",
+                  paddingLeft: "10px"
+                }}
+                >
+                  Crear solicitud
+
+                </td>
+              </tr>
+
+            </NavLink>
+          }
+
+          {/* {
+            auth.rol == "administrador" &&
+            <NavLink
+              className={classNavLink}
+              activeClassName={classActiveNavLink}
+              onClick={() => setVisible(false)}
+              to="/crearFormulario"
+              style={{ background: "white", borderRadius: "10px" }}
+            >
+              <tr>
+                <td>
+                  <img style={{ height: '57px' }}
+                    src={'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20men%C3%BA%20-02.png'}></img>
+                </td>
+                <td style={{
+                  verticalAlign: "middle", textAlign: "center", color: "#727781",
+                  paddingLeft: "10px"
+                }}
+                >
+                  Crear formularios
+
+                </td>
+              </tr>
+
+            </NavLink>
+          } */}
+
+          {
+            (auth.rol) &&
+            <NavLink
+              onClick={onClose}
+              className={classNavLink}
+              activeClassName={classActiveNavLink}
+              to="/misSolicitudes"
+              style={{ background: "white", borderRadius: "10px" }}
+            >
+              <tr>
+                <td>
+                  <img style={{ height: '57px' }}
+                    src={'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20men%C3%BA%20-03.png'}></img>
+                </td>
+                <td style={{
+                  verticalAlign: "middle", textAlign: "center", color: "#727781",
+                  paddingLeft: "10px"
+                }}
+                >
+                  Mis solicitudes
+
+                </td>
+              </tr>
+
+            </NavLink>
+          }
+
+          {
+            auth.rol == "administrador" &&
+            <NavLink
+              onClick={onClose}
+              className={classNavLink}
+              activeClassName={classActiveNavLink}
+              to="/usuarios"
+              style={{ background: "white", borderRadius: "10px" }}
+            >
+              <tr>
+                <td>
+                  <img style={{ height: '57px' }}
+                    src={'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20men%C3%BA%20-04.png'}></img>
+                </td>
+                <td style={{
+                  verticalAlign: "middle", textAlign: "center", color: "#727781",
+                  paddingLeft: "10px"
+                }}
+                >
+                  Usuarios
+
+                </td>
+              </tr>
+
+            </NavLink>
+          }
+
+          {
+            (auth.rol == "administrador" || auth.rol == "lider") &&
+            <NavLink
+              onClick={onClose}
+              className={classNavLink}
+              activeClassName={classActiveNavLink}
+              to="/solicitudesPendientes"
+              style={{ background: "white", borderRadius: "10px" }}
+            >
+              <tr>
+                <td>
+                  <img style={{ height: '57px' }}
+                    src={'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20men%C3%BA%20-05.png'}></img>
+                </td>
+                <td style={{
+                  verticalAlign: "middle", textAlign: "center", color: "#727781",
+                  paddingLeft: "10px"
+                }}
+                >
+                  Solicitudes pendientes
+
+                </td>
+              </tr>
+
+            </NavLink>
+          }
+
+        </div>
+      </Drawer >
+    </div >
+  )
+}
+
+//</script>
+
+
+

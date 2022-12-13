@@ -1,0 +1,18 @@
+//<script type="text/jsx">
+
+function AdminRoutes({ ...args }) {
+
+  const { auth } = useContext(DataContext);
+
+  return (
+    <Fragment>
+      {auth.rol == "administrador"
+        ? <Route {...args} />
+        : <Redirect to="/*" />
+      }
+    </Fragment>
+  )
+}
+
+
+  //</script>

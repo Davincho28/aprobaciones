@@ -1,0 +1,92 @@
+//<script type="text/jsx">
+{ /* constantes react router dom */ }
+const { Link, NavLink, Redirect, Route, Switch, BrowserRouter, useParams, useHistory } = ReactRouterDOM;
+const Router = BrowserRouter;
+{ /* constantes react js */ }
+const { useState, useEffect, useRef, createContext, useContext, Fragment } = React;
+{ /* constantes ant design */ }
+const {
+  Avatar,
+  Button,
+  Checkbox,
+  Collapse,
+  Drawer,
+  DatePicker,
+  Divider,
+  Form,
+  Input,
+  InputNumber,
+  Image,
+  Modal,
+  notification,
+  message,
+  Select,
+  Popover,
+  Space,
+  Spin,
+  Steps,
+  Table,
+  Tag,
+  TimePicker,
+  Card,
+  Col,
+  Row,
+  Upload
+} = antd;
+
+
+const { Panel } = Collapse;
+const { Item } = Form;
+const { Group, Password, TextArea } = Input;
+const { Option } = Select;
+const { Step } = Steps;
+const { Column, ColumnGroup } = Table;
+const { Meta } = Card;
+{ /* constantes iconos ant design */ }
+const { SearchOutlined, LoadingOutlined, UploadOutlined, MenuOutlined, SubnodeOutlined, ArrowLeftOutlined } = icons;
+
+
+const { v4 } = uuid;
+
+const verdeClaro = '#00B0BD';
+const verdeOscuro = '#1c6469';
+const colorDrawer = '#0a858f';
+const colorButtonDetalles = '#28a745';
+const colorgris = '#D0FFE2';
+const colorblanco = "#FFFFFF";
+const letra = {
+  font: 'Bungee Inline',
+  weights: [400],
+};
+
+const FormSchema = JSONSchemaForm.default
+
+
+
+
+const IMAGENES = [
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/Preguntas%20e%20inquietudes_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/Solicitud%20control%20de%20calidad.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitud%20certificado%20laboral_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitud%20de%20permisos.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitud%20cronograma%20de%20actividades%20generales_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitud%20informe%20de%20actualizaci%C3%B3n%20de%20datos_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitud%20ingresos%20y%20retenciones_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitud%20novedades%20en%20tu%20nomina_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitud%20traslado_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitud%20vacaciones_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitudes%20apoyo_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitudes%20de%20equipos%20laborales%20(%20electrodom%C3%A9sticos%2C%20etc).png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitudes%20informe%20capacitaciones_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitudes%20portafolio%20productos%20y%20servicios_.png',
+  'https://storage.cloud.google.com/serv-appsscript/AppAprobaciones/iconos%20solicitudes/solicitudes%20%C3%A1rea%20de%20sistemas_.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20men%C3%BA%20-02.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20men%C3%BA%20-03.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20men%C3%BA%20-04.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20men%C3%BA%20-05.png',
+  'https://storage.googleapis.com/serv-appsscript/AppAprobaciones/iconos%20men%C3%BA%20_Mesa%20de%20trabajo%201.png',
+
+]
+
+
+  //</script>

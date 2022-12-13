@@ -1,0 +1,174 @@
+
+//<script type="text/jsx">
+function CrearFormulario() {
+
+  const [newSchema, setNewSchema] = useState({});
+  const [campo, setCampo] = useState("");
+  const [formData, setformData] = useState({});
+  const [idSelector, setIdSelector] = useState("");
+  const [guardandoJson, setGuardandoJson] = useState(false);
+
+
+  const history = useHistory();
+
+
+  // se consume el estado global desde el DataContext
+  const { fasesEscalamiento, setFasesEscalamiento, uiSchema, setUiSchema, editarFormulario, dependencias, setDependencias, mostrarEsquema } = useContext(DataContext)
+
+  useEffect(() => {
+
+    if (Object.keys(editarFormulario.newSchema).length !== 0) {
+      setNewSchema(editarFormulario.newSchema);
+      setUiSchema(editarFormulario.uiSchema);
+    }
+    setFasesEscalamiento({
+      verForm: true,
+      numero: 1,
+      schema: {
+      }
+    });
+
+  }, [])
+
+  const handleSubmit = ({ formData }) => {
+
+  }
+
+  const crearNuevoForm = (titulo = undefined, emoticon) => {
+    const newForm = {
+      title: titulo,
+      emoticon,
+      type: "object",
+      required: [],
+      properties: {
+      },
+    }
+    setNewSchema(newForm)
+  }
+
+  const agregarNuevoCampo = (nombre, tipoDato, dependencias = false) => {
+    const id = nombre.replaceAll(' ', "_");
+
+    const { campoRequerido, type } = tipoDato;
+
+    type == "array"
+      &&
+      setUiSchema({
+        ...uiSchema,
+        [id]: {
+          "ui:widget": "checkboxes"
+        },
+      })
+
+    dependencias &&
+      setNewSchema({
+        ...newSchema,
+        dependencies: {
+
+        }
+      })
+
+
+
+    campoRequerido == "Si"
+      ? setNewSchema({
+        ...newSchema,
+        required: [...newSchema.required, id],
+        properties: {
+          ...newSchema.properties,
+          [id]: tipoDato
+        }
+      })
+      : setNewSchema({
+        ...newSchema,
+        properties: {
+          ...newSchema.properties,
+          [id]: {
+            ...tipoDato,
+            title: nombre
+          }
+        }
+      })
+    setCampo("");
+  }
+
+
+  const guardarJSON = () => {
+    setGuardandoJson(true);
+    const idForm = v4();
+    google.script.run
+      .withSuccessHandler(() => {
+        notification.open({
+          message: "Formulario guardado"
+        }
+        )
+        crearNuevoForm();
+        setGuardandoJson(false);
+        history.push('/solicitudes');
+        setFasesEscalamiento({
+          ...fasesEscalamiento,
+          numero: 1,
+          schema: {
+          }
+        })
+      }
+      )
+      .guardarFormulario(idForm, newSchema.title, JSON.stringify(newSchema), JSON.stringify(fasesEscalamiento.dataFasesEscalamiento), JSON.stringify(uiSchema))
+  }
+
+  const actualizarJSON = () => {
+    setGuardandoJson(true);
+    const datosFormuario = {
+      id: editarFormulario.idFormulario,
+      titulo: newSchema.title,
+      newSchema: JSON.stringify(newSchema),
+      fasesEscalamiento: JSON.stringify(fasesEscalamiento.dataFasesEscalamiento),
+      uiSchema: JSON.stringify(uiSchema),
+    }
+
+    google.script.run
+      .withSuccessHandler(() => {
+        setGuardandoJson(false);
+        notification.open({
+          message: "Formulario actualizado"
+        }
+        )
+        history.push('/solicitudes');
+        setFasesEscalamiento({
+          ...fasesEscalamiento,
+          numero: 1,
+          schema: {
+          }
+        })
+      }
+      )
+      .actualizarFormulario(datosFormuario)
+  }
+
+  const [viewform, setViewform] = useState(undefined);
+  const [Editform, setEditform] = useState(undefined);
+
+  return (
+    <div
+      className="py-10 px-5 grid grid-cols-1 sm:grid-cols-3">
+      <div
+        style={{ backgroundColor: verdeOscuro }}
+        className="px-5 flex items-center justify-center flex-col py-5 sm:col-span-1">
+        <h2 className="text-center text-white text-2xl mb-5" style={{ color: colorgris }}>
+          Crear formulario
+        </h2>
+        <div>
+          <CrearForm2 form={{ setViewform, setEditform }} />
+        </div>
+      </div>
+
+      <div style={{ backgroundColor: 'white' }} className="p-5 sm:col-span-2 h-full overflow-hidden">
+        <h1 className="text-center text-2xl border-b-2 border-gray-300 pb-2">Vista previa formulario</h1>
+        <br />
+        {mostrarEsquema && <VistaPreviaForm />}
+        {!fasesEscalamiento.verForm && <VistaForm form={{ viewform, Editform }} />}
+      </div>
+    </div>
+  )
+}
+//</script>

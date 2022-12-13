@@ -1,0 +1,70 @@
+//<script type="text/jsx">
+function FasesEscalamiento() {
+
+  const { fasesEscalamiento, setFasesEscalamiento, listaLideres, verFasesEscalamiento, setVerFasesEscalamiento, setMostrarEsquema } = useContext(DataContext)
+  const objectFasesEscalamiento = () => {
+    setMostrarEsquema(true);
+    const arrayIds = [];
+    const objProperties = {}
+
+    for (let index = 0; index < fasesEscalamiento.numero; index++) {
+      let id = "fase" + (index + 1);
+      arrayIds.push(id);
+
+      objProperties[id] = {
+        type: "string",
+        title: id + " : Lider a quien realiza la solicitud",
+        enum: listaLideres.correos,
+        enumNames: listaLideres.nombres,
+      }
+    }
+
+    setFasesEscalamiento({
+      ...fasesEscalamiento,
+      schema: {
+        title: " Fases de Escalamiento",
+        type: "object",
+        required: arrayIds,
+        properties: objProperties,
+      }
+    })
+  }
+
+  return (
+    <div className="grid grid-cols-1 gap-4 mb-5">
+
+      <label className="text-white">Numero de fases de escalamiento:{" "}
+        <select
+          className="border p-2 rounded-md text-black w-full focus:outline-none"
+          type="number"
+          min={1}
+          value={fasesEscalamiento.numero}
+          onChange={(e) => {
+            setFasesEscalamiento({ ...fasesEscalamiento, numero: e.target.value })
+          }}
+        >
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </label>
+
+
+      <button
+        type="button"
+        style={{ backgroundColor: verdeClaro }}
+        className="p-2 rounded-md text-white "
+        onClick={objectFasesEscalamiento}>
+        Generar fases de escalamiento
+      </button>
+
+
+    </div>
+  )
+}
+
+
+
+  //</script>

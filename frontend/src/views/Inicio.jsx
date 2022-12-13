@@ -7,24 +7,24 @@ const Inicio = () => {
     return (
         <Fragment>
             <div className="md:col-span-3 mr-20">
-                <div className='ml-5'>
-                    <h1 className='mt-10 text-xl font-bold text-gray-500'>
-                        Tu app sistematica de Aprobaciones
+                <div className='ml-16'>
+                    <h1 className='mt-10 text-3xl font-bold text-gray-700'>
+                        Tu App Sistemática de Aprobaciones
                     </h1>
-                    <h1 className='mt-5 text-gray-700 font-bold'>
+                    <p className='mt-6 text-black font-bold'>
                         Nuestra aplicación ofrece una forma sencilla de crear y optimizar todas las peticiones a diferentes solicitudes, como por ejemplo aprobaciones vacacionales y prestamos de equipos.
-                    </h1>
-                    <h1 className='mt-5 text-gray-700 font-bold'>
+                    </p>
+                    <p className='mt-6 text-black font-bold'>
                         En nuestro menú superior izquierdo, encontrarás todas las opciones que brindamos para la creación y visualización de tus procesos.
-                    </h1>
+                    </p>
                 </div>
 
-                <div className='ml-5'>
-                    <h1 className='mt-10 text-xl font-bold text-gray-500'>
+                <div className='ml-16 mt-[23]'>
+                    <h1 className='mt-10 text-2xl font-bold text-gray-700'>
                         ¿Que haras hoy?
                     </h1>
 
-                    <Row gutter={[24, 16]} className='space-x-3 mt-4'>
+                    <Row gutter={[24, 16]} className='space-x-3 mt-[46]'>
                         <Link to={'/CrearSolicitud'}>
                             <Col className='border-2 border-gray-400 rounded-2xl flex flex-col items-center ml-3 
                          hover:bg-gray-200 hover:border-green-700'>

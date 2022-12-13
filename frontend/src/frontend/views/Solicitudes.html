@@ -1,0 +1,187 @@
+//<script type="text/jsx">
+
+function Solicitudes() {
+
+  const { setEditarFormulario, eliminarFormulario, setEliminarFormulario, verFasesEscalamiento, setVerFasesEscalamiento } = useContext(DataContext);
+
+  const history = useHistory();
+
+  const [verForm, setVerForm] = useState({
+    cargado: false,
+    formularios: "",
+    idFormulario: ""
+  });
+  const [viewform, setViewform] = useState(undefined);
+  const [Editform, setEditform] = useState(undefined);
+  const [stateGuardando, setStateGuardando] = useState(false)
+
+  const [newSchema, setNewSchema] = useState(null);
+  const [uiSchema, setUiSchema] = useState(null);
+
+
+
+
+  const handleSubmit = ({ formData }) => {
+    setStateGuardando(true)
+    if (!stateGuardando) {
+
+      const idSolicitud = v4();
+      const fechaSolicitud = moment(Date.now()).format('lll');
+      google.script.run
+        .withSuccessHandler(notificacionSolicitudCreada)
+        .crearSolicitud(
+          fechaSolicitud,
+          newSchema.title,
+          JSON.stringify(formData),
+          idSolicitud,
+          verForm.idFormulario,
+          verForm.fasesDeEscalamiento
+        );
+    }
+  }
+
+  const notificacionSolicitudCreada = () => {
+    notification.open({
+      message: "Solicitud creada"
+    });
+    setNewSchema(null);
+    setStateGuardando(false)
+  }
+
+  // useEffect(() => {
+  //   google.script.run
+  //     .withSuccessHandler(mostrarFormularios)
+  //     .listarFormularios();
+  // }, [eliminarFormulario.state])
+
+  useEffect(() => {
+    eliminarFormulario.idFormulario != ""
+      &&
+      eliminarJSON();
+  }, [eliminarFormulario.idFormulario])
+
+  const mostrarFormularios = (formularios) => {
+    setVerForm({ cargado: true, formularios });
+  }
+
+  const handleEditarFormulario = () => {
+    history.push('/crearFormulario');
+    setEditarFormulario({ newSchema: newSchema, uiSchema: uiSchema, idFormulario: verForm.idFormulario });
+  }
+
+  const eliminarJSON = () => {
+    Swal.fire({
+      title: 'Estas seguro de eliminar el formulario?',
+      text: "Esta acción no se puede revertir!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si, eliminar definitivamente!',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setEliminarFormulario({ ...eliminarFormulario, state: true })
+        google.script.run.withSuccessHandler(() => {
+          setEliminarFormulario({ idFormulario: "", state: false });
+          setNewSchema(null);
+          Swal.fire(
+            'Eliminado!',
+            'La tarea ha finalizado correctamente.',
+            'success'
+          )
+        }).eliminarFormulario(eliminarFormulario.idFormulario);
+      } else {
+        setEliminarFormulario({ idFormulario: "", state: false });
+      }
+    })
+
+
+  }
+
+
+  const [data, setData] = useState([]);
+  const [eliminar, setEliminar] = useState(1);
+  const [loading, setLoading] = useState("");
+
+  const actualiza = () => {
+    setLoading("");
+    traerforms()
+    setEditform(undefined);
+    setVerFasesEscalamiento(false);
+  }
+
+
+  const traerforms = () => {
+    google.script.run
+      .withSuccessHandler((e) => { setData(e), setLoading('cargado') })
+      .buscarinfo()
+  }
+
+  useEffect(() => {
+    traerforms();
+  }, [])
+
+
+  return (
+    <div
+
+
+      className="py-10 px-5 sm:px-10 md:px-20 lg:px-40 grid grid-cols-1 sm:grid-cols-2 min-h-screen">
+      <div style={{ backgroundColor: verdeClaro }} className="px-10  items-center justify-center">
+
+        <div style={{ paddingTop: 50, margin: 20 }}>
+          <h2 className="text-center text-white text-lg">En la lista de formularios puede llenar su solicitud.</h2></div>
+        <img className="rounded-lg"
+          src="https://storage.googleapis.com/serv-appsscript/AppAprobaciones/procesos.png"
+          alt="imagen Servinformacion" />
+
+      </div>
+
+
+
+      <div className="px-5 md:px-10 bg-white overflow-scroll">
+        <h2 className="mt-6 text-center text-3xl">Formularios de solicitudes</h2>
+
+        {Editform && <Button icon={<ArrowLeftOutlined />} onClick={actualiza} className="mb-6"
+          style={{
+            fontSize: '32px',
+          }}
+        ></Button>}
+
+        {
+          loading == "" ?
+            <div className="col-auto text-center">
+              <br />
+              <Spin tip="Loading..." size="large"></Spin>
+            </div>
+            :
+            !Editform ?
+              <div className="grid grid-cols-2 gap-4 mt-5">
+                {data.length > 0 &&
+                  data.map((fila) => {
+                    return (
+                      <div
+                        onClick={() => {
+                          setEditform(`https://docs.google.com/forms/d/${fila.id_form}/edit`)
+                          setViewform(fila.url_form)
+                        }}
+                        className="bg-gray-50 shadow-xl hover:shadow-2xl cursor-pointer transition duration-300 rounded-xl">
+                        <h3 className="text-center">{fila.nombre_form}</h3>
+                        <img className="mx-auto" src={fila.iconos} width="60" height="60" />
+                      </div>
+                    )
+                  })
+                }
+              </div>
+              : <VistaForm form={{ viewform, Editform, eliminar, setVerFasesEscalamiento, verFasesEscalamiento }} />
+        }
+
+      </div>
+    </div>
+  )
+}
+
+
+
+  //</script>

@@ -1,0 +1,109 @@
+//<script type="text/jsx">
+
+const DataContext = createContext();
+
+
+function DataProvider({ children }) {
+
+  const history = useHistory();
+
+  const [auth, setAuth] = useState({
+    rol: "",
+  })
+
+  const [dominio, setdominio] = useState("cargando");
+  const [lideractivo, setLideractivo] = useState("");
+
+  const [verFasesEscalamiento, setVerFasesEscalamiento] = useState(false);
+  const [idFormularioEditarFasesEscalamiento, setIdFormularioEditarFasesEscalamiento] = useState("");
+
+  const [editarFormulario, setEditarFormulario] = useState({
+    newSchema: {},
+    uiSchema: {}
+  })
+
+  const [eliminarFormulario, setEliminarFormulario] = useState({
+    idFormulario: "",
+    state: false
+  })
+
+  const [mostrarEsquema, setMostrarEsquema] = useState(false);
+  const [listaLideres, setListaLideres] = useState({ correos: [], nombres: [] });
+
+  const [listaRoles, setListaRoles] = useState([]);
+
+  const [uiSchema, setUiSchema] = useState({})
+
+  const [desplegableEstadoAprobacion, setDesplegableEstadoAprobacion] = useState([]);
+
+  const [dependencias, setDependencias] = useState();
+
+
+  const [fasesEscalamiento, setFasesEscalamiento] = useState({
+    numero: 1,
+    schema: {
+    },
+    verForm: true
+  })
+
+  useEffect(() => {
+
+    google.script.run
+      .withSuccessHandler((dominio) => {
+        setdominio(dominio)
+      })
+      .obtenerDominio();
+
+    google.script.run.withSuccessHandler(rol => {
+      setAuth({ ...auth, rol: rol });
+    }).obtenerRol();
+
+    google.script.run
+      .withSuccessHandler(setLideractivo)
+      .buscarlideres()
+
+    // petición para traer la lista de lideres y guardarlas en un estado global
+    google.script
+      .run
+      .withSuccessHandler(guardarListaLideres)
+      .listaLideres();
+
+    google.script
+      .run
+      .withSuccessHandler(roles =>
+        setListaRoles(roles)
+      )
+      .desplegableRoles();
+
+    google.script
+      .run
+      .withSuccessHandler(res =>
+        setDesplegableEstadoAprobacion(res)
+      )
+      .desplegableEstadoSolitudes();
+  }, [])
+
+
+
+  const guardarListaLideres = (arrayLideres) => {
+    const correos = arrayLideres.map(lider => lider[3])
+    const nombres = arrayLideres.map(lider => lider[1] + " " + lider[2])
+
+    setListaLideres({ correos, nombres, arrayLideres })
+
+  }
+
+  const store = {
+    listaLideres, listaRoles, desplegableEstadoAprobacion, fasesEscalamiento, setFasesEscalamiento, uiSchema, setUiSchema, editarFormulario, setEditarFormulario, eliminarFormulario, setEliminarFormulario, auth, setAuth, dependencias, setDependencias, verFasesEscalamiento, setVerFasesEscalamiento,
+    idFormularioEditarFasesEscalamiento, setIdFormularioEditarFasesEscalamiento, mostrarEsquema, setMostrarEsquema, dominio, setdominio, lideractivo
+  }
+
+  return (
+    <DataContext.Provider value={store}>
+      {children}
+    </DataContext.Provider>
+  )
+}
+
+
+  //</script>

@@ -1,0 +1,124 @@
+//<script type="text/jsx">
+
+// modal para escalar solicitud
+const ModalEscalarSolicitud = ({ visible, setVisible, datos, setDatos, actualizarTabla, setActualizarTabla }) => {
+
+  const { desplegableEstadoAprobacion } = useContext(DataContext);
+  const [obligobservacion, setObligobservacion] = useState("");
+
+  let observaciones = {
+    json: JSON.parse(datos[7][13]),
+    data: ""
+  };
+
+  for (let key in observaciones.json) {
+    observaciones.data += ` ✔️ ${key}: ${observaciones.json[key]}`
+  }
+
+  const initialValues = {
+    "identificacion": datos[0],
+    "nombres": datos[1],
+    "apellidos": datos[2],
+    "correo": datos[3],
+    "tipoSolicitud": datos[4],
+    "fechaSolicitud": datos[5],
+    "comentarios": JSON.stringify(observaciones.data).replaceAll('"', '').replaceAll("_", " ")
+  }
+
+  // console.log("observaciones: " + observaciones.json["Por favor especifique las condiciones de la prueba que se deben tener en cuenta como: esquema de calificación, tiempo de la prueba, entre otros aspectos importantes"]);
+
+  const id = datos[7][14]
+  const fases = datos[7][16]
+
+
+  //limpieza de modal form
+  const formSucces = (datos) => {
+    let fecha = moment(Date.now()).format('lll');
+    const { gestionSolicitud, liderEscalado, tipoSolicitud } = datos;
+    notification.open({
+      message: 'Actualizando la solicitud',
+      description: 'Gracias por estar al dia en la gestión.',
+    });
+
+    const detallesObservacion = datos.observacion ? " observacion: " + datos.observacion : ""
+
+    google.script.run
+      .withSuccessHandler(() => setActualizarTabla(actualizarTabla + 1))
+      .actualizarSolicitud(id, gestionSolicitud, fecha, fases, tipoSolicitud, detallesObservacion);
+
+
+    // se oculta el modal y los datos del estado se vuelven a null
+    setVisible(false);
+    setDatos(null);
+  }
+
+  return (
+    <Modal title="Gestionar solicitudes" centered visible={visible} onCancel={() => {
+      setVisible(false);
+      setDatos(null);
+    }
+    }
+      footer={[]}
+      destroyOnClose
+    >
+      <Form onFinish={formSucces} layout="vertical" autocomplete="off" initialValues={initialValues}>
+        <Item label="Identificación" name="identificacion">
+          <Input readOnly />
+        </Item>
+
+        <Item label="Nombres" name="nombres">
+          <Input readOnly />
+        </Item>
+
+        <Item label="Apellidos" name="apellidos">
+          <Input readOnly />
+        </Item>
+
+        <Item label="Correo" name="correo">
+          <Input readOnly />
+        </Item>
+
+        <Item label="Tipo de solicitud" name="tipoSolicitud">
+          <Input readOnly />
+        </Item>
+
+        <Item label="Fecha de solicitud" name="fechaSolicitud">
+          <Input readOnly />
+        </Item>
+
+        <Item label="Respuestas del formulario" name="comentarios">
+          <TextArea readOnly />
+        </Item>
+
+        <Item label="Gestionar solicitud" name="gestionSolicitud" rules={[{
+          required: true,
+          message: 'Por favor seleccione una opción'
+        }]}>
+          <Select placeholder="--seleccione--"
+            onChange={setObligobservacion}
+          >
+            {desplegableEstadoAprobacion.map(e => e !== "" && <Option value={e}>{e}</Option>)}
+          </Select>
+        </Item>
+        {
+          obligobservacion == "denegado" &&
+          <Item label="observacion" name="observacion" rules={[{
+            required: true,
+            message: 'Por favor escriba la observacion'
+          }]}
+          >
+            <TextArea />
+          </Item>
+        }
+        <Item className="text-center">
+          <Button style={{ backgroundColor: verdeClaro, color: "white" }} className="w-32" htmlType="submit">Guardar
+            cambios
+          </Button>
+        </Item>
+
+      </Form>
+    </Modal>
+  )
+}
+
+//</script>

@@ -1,0 +1,23 @@
+//<script type="text/jsx">
+
+function FormSolicitud() {
+  return (
+    <div>
+      <FormSchema
+        formData={formData}
+        className="md:px-4 space-y-3"
+        schema={newSchema}
+        onSubmit={handleSubmit}
+        onError={log("errors")} >
+        <button
+          type="submit"
+          style={{ backgroundColor: verdeClaro }}
+          className="p-2 rounded-md text-white">
+          Guardar
+        </button>
+      </FormSchema>
+    </div>
+  )
+}
+
+  //</script>

@@ -1,0 +1,83 @@
+//<script type="text/jsx">
+
+function VistaPreviaForm() {
+
+  const { fasesEscalamiento, setFasesEscalamiento, verFasesEscalamiento, setVerFasesEscalamiento, idFormularioEditarFasesEscalamiento, setMostrarEsquema } = useContext(DataContext);
+
+  const guardarFasesEscalamiento = ({ formData }) => {
+    setMostrarEsquema(false)
+    if (formData === undefined) {
+      return notification.warning({
+        message: 'Importante!',
+        description: 'Es necesario asignar las fases de escalamiento ✔',
+      })
+    }
+
+    let arrayDatos = [];
+
+    for (let key in formData) {
+      arrayDatos.push(formData[key])
+    }
+
+    let lentghArray = arrayDatos.length;
+
+    let arraySinDuplicados = [...new Set(arrayDatos)];
+
+
+    if (lentghArray == arraySinDuplicados.length) {
+      setFasesEscalamiento({
+        ...fasesEscalamiento,
+        dataFasesEscalamiento: formData,
+        verForm: false
+      })
+
+      if (verFasesEscalamiento) {
+        setVerFasesEscalamiento(false);
+
+        google.script.run
+          .withSuccessHandler(() => { })
+          .UpdateFormularios(
+            idFormularioEditarFasesEscalamiento,
+            JSON.stringify({ fases_escalamiento: formData }));
+
+        return notification.success({
+          message: 'fases de escalamiento guardadas',
+          description: 'Se aplicaron correctamente todos los cambios. ✔',
+        })
+      }
+
+      notification.success({
+        message: 'fases de escalamiento guardadas',
+        description: 'Guarde el formulario para aplicar todos los cambios. ✔',
+      })
+    } else {
+      return notification.warning({
+        message: 'Revisar fases de escalamiento duplicadas',
+        description: 'Las listas de selección no deben contener usuarios repetidos para escalar las solicitudes',
+      })
+    }
+
+
+
+  }
+
+
+  return (
+    <div>
+      <FormSchema
+        className="md:px-4 space-y-3"
+        schema={fasesEscalamiento.schema}
+        onSubmit={guardarFasesEscalamiento}
+      >
+        <button
+          type="submit"
+          style={{ backgroundColor: verdeClaro, paddingTop: 50, margin: 20 }}
+          className="p-2 rounded-md text-white">
+          Guardar fases de escalamiento
+        </button>
+      </FormSchema>
+    </div >
+  )
+}
+
+  //</script>

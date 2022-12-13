@@ -1,0 +1,63 @@
+//<script type="text/jsx">
+// función que busca en la tabla por el data index y retorna un objeto que se encarga de cambiar el estado de la tabla
+const getColumnSearchProps = (dataIndex, state, setState) => ({
+  filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+    <div style={{ padding: 8 }}>
+      <Input
+        placeholder={`Buscar por ${dataIndex}`}
+        value={selectedKeys[0]}
+        onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+        onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex, setState)}
+        style={{ marginBottom: 8, display: 'block' }}
+      />
+      <Space>
+        <Button
+          type="primary"
+          onClick={() => handleSearch(selectedKeys, confirm, dataIndex, setState)}
+          size="small"
+          style={{ width: 90, backgroundColor: verdeClaro }}
+        >
+          Buscar
+        </Button>
+        <Button onClick={() => handleReset(clearFilters, setState)} size="small" style={{ width: 90 }}>
+          Resetear
+        </Button>
+        <Button
+          type="link"
+          size="small"
+          onClick={() => {
+            confirm({ closeDropdown: false });
+            setState({
+              searchText: selectedKeys[0],
+              searchedColumn: dataIndex,
+            });
+          }}
+        >
+          Filtrar
+        </Button>
+      </Space>
+    </div>
+  ),
+  //    ------------------------------------
+  filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+  onFilter: (value, record) =>
+    record[dataIndex]
+      ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+      : '',
+});
+
+const handleSearch = (selectedKeys, confirm, dataIndex, setState) => {
+  confirm();
+  setState({
+    searchText: selectedKeys[0],
+    searchedColumn: dataIndex,
+  });
+};
+
+const handleReset = (clearFilters, setState) => {
+  clearFilters();
+  setState({ searchText: '' });
+};
+
+
+//</script>

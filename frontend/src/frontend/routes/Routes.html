@@ -1,0 +1,44 @@
+//<script type="text/jsx">
+
+function Routes() {
+
+  const { auth, dominio } = useContext(DataContext)
+  return (
+    <Router>
+      <div className="bg-fixed"
+        style={{
+          backgroundImage:
+            'url("https://storage.googleapis.com/serv-appsscript/AppAprobaciones/texturas-03.jpg")',
+        }} >
+        <Redirect to={{ pathname: "/loger" }} />
+        {
+          dominio == false ?
+            <Redirect to={{ pathname: "/*" }} />
+            :
+            dominio != "cargando" &&
+            <Fragment>
+              <Redirect to={{ pathname: "/inicio" }} />
+              <MenuDrawer />
+            </Fragment>
+        }
+        <Switch>
+          <Route path="/loger" component={Loger} />
+          <Route path="/inicio" component={Inicio} />
+          <Route path="/solicitudes" component={Solicitudes} />
+          <Route path="/misSolicitudes" component={MisSolicitudes} />
+          {
+            auth.rol && dominio &&
+            <Fragment>
+              <AdminRoutes path="/crearFormulario" component={CrearFormulario} />
+              <AdminRoutes path="/usuarios" component={Usuarios} />
+              <PrivateRoute path="/solicitudesPendientes" component={SolicitudesPendientes} />
+            </Fragment>
+          }
+          <NotFoundRoute path="/*" component={NotFound} />
+        </Switch>
+      </div>
+    </Router>
+  )
+}
+
+  //</script>

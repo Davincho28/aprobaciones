@@ -1,0 +1,157 @@
+//<script type="text/jsx">
+const VistaForm = ({ form }) => {
+  const [actuavist, setActuavist] = useState(true);
+  const [visteliminado, setVisteliminado] = useState("");
+  const [messageeliminado, setMessageeliminado] = useState("");
+  const ifrem = useRef();
+
+  const { auth, lideractivo, mostrarEsquema } = useContext(DataContext);
+
+  function abrirEdicionForm() {
+    document.getElementById("clickEditForm").disabled = true;
+    let params = `scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=800,height=800,left=-1000,top=-1000`;
+    let ventana = open(`${form.Editform}`, "", params);
+    ventana.focus();
+    detectaVentana(ventana);
+  }
+
+  function ActualizarVista() {
+    setActuavist(false);
+    setTimeout(() => {
+      setActuavist(true);
+    }, 500);
+  }
+
+  function detectaVentana(ventana) {
+    var tiempo = 0;
+    var interval = setInterval(function () {
+      //Comprobamos que la ventana no este cerrada
+      if (ventana.closed !== false) {
+        //Si la ventana ha sido cerrada, limpiamos el contador
+        window.clearInterval(interval)
+        document.getElementById("clickEditForm").disabled = false;
+        carga();
+      } else {
+        //Mientras no se cierra la ventana sumamos los segundos
+        tiempo += 1;
+      }
+    }, 1000)
+  }
+
+  const eliminarform = () => {
+    document.getElementById('btneliminarForm').disabled = true;
+    swal({
+      title: "Eliminar formulario",
+      text: "Estas seguro de eliminar este formulario?",
+      icon: "warning",
+      buttons: ["No", "Si"]
+    }).then(respuesta => {
+      if (respuesta) {
+        setMessageeliminado("esperando")
+        google.script.run
+          .withSuccessHandler((e) => {
+            swal({
+              text: 'se ha eliminado correctamente',
+              icon: "success"
+            }), setVisteliminado(e)
+          })
+          .dropform(form.Editform);
+      }
+      else {
+        document.getElementById('btneliminarForm').disabled = false;
+      }
+    })
+  }
+
+  return (
+    <div className="h-full">
+      {
+        form.viewform
+          ?
+          <div className="h-full">
+            {
+              messageeliminado == "" ?
+                <Fragment>
+                  {
+                    (auth.rol == "administrador") &&
+                    <div className="flex space-x-1 justify-center" align="center">
+                      <Button
+                        className="mr-2"
+                        onClick={abrirEdicionForm}
+                        id="clickEditForm"
+                        style={{ background: colorDrawer, color: colorblanco, align: "left" }}>
+                        Editar
+                      </Button>
+                      <Button
+                        className="mr-2"
+                        onClick={ActualizarVista}
+                        style={{ background: verdeClaro, color: colorblanco }}>
+                        Actualizar
+                      </Button>
+
+                      {/* {
+                    form.eliminar > 0 &&
+                    <span>
+                      <Button
+                        className="mr-2"
+                        onClick={eliminarform}
+                        id="btneliminarForm"
+                        style={{ background: 'red', color: colorblanco, align: "left" }}>
+                        Eliminar
+                      </Button>
+
+                      <Button
+                        className="mr-2"
+                        onClick={() => {
+                          form.setVerFasesEscalamiento(prev => !prev)
+                          setIdFormularioEditarFasesEscalamiento(form.Editform.replace("https://docs.google.com/forms/d/", "").replace("/edit", ""))
+                        }}
+                        id="clickEditForm"
+                        style={{ background: colorDrawer, color: colorblanco, align: "left" }}>
+                        Editar Fases
+                      </Button>
+                    </span>
+                  } */}
+                    </div>
+                  }
+                </Fragment>
+
+                :
+                visteliminado != "" ?
+                  <div className="flex justify-center">
+                    <hr></hr>
+                    <div className="alert alert-success" role="alert">
+                      <p>se ha eliminado el formulario correctamente.</p>
+                      <p className="mb-0">dale click en la flecha para regresar a los otros formularios</p>
+                    </div>
+                  </div>
+                  :
+                  <div align="center" className="h-full w-full">
+                    <Spin tip="Espera porfavor..." size="large" />
+                  </div>
+            }
+            <br />
+            {form.verFasesEscalamiento && <FasesEscalamiento />}
+            {mostrarEsquema && <VistaPreviaForm />}
+            {
+              actuavist && messageeliminado == "" && lideractivo ?
+                <iframe
+                  src={form.viewform + "?embedded=true&usp=sf_link"}
+                  className="h-full w-full"
+                  ref={ifrem}
+                >
+                </iframe>
+                :
+                <h1>No estas en la lista de personas autorizadas para llenar este formulario</h1>
+            }
+          </div>
+          :
+          <div align="center" className="h-full w-full">
+            <Spin tip="Esperando creacion de formulario..." size="large" />
+          </div>
+      }
+
+    </div >
+  )
+}
+//</script>

@@ -1,0 +1,131 @@
+
+//<script type="text/jsx">
+  function CrearForm({ campo, setCampo, guardarJSON, actualizarJSON, agregarNuevoCampo, newSchema, setNewSchema, crearNuevoForm, guardandoJson }) {
+
+    const [titulo, setTitulo] = useState("");
+    const [enumField, setEnumField] = useState("")
+    const [tipoDato, setTipoDato] = useState({
+      type: "string",
+      format: ""
+    });
+    const [jsonForm, setJsonForm] = useState({});
+    const { fasesEscalamiento, setFasesEscalamiento, editarFormulario } = useContext(DataContext);
+
+    useEffect(() => {
+
+      let dependencias = false;
+
+      const arrayEnum = enumField.split(",").map(e => e.trim());
+      const arraySinDuplicados = new Set(arrayEnum);
+
+      switch (tipoDato.format) {
+
+        case "option":
+          setJsonForm({ title: campo, type: tipoDato.type, enum: [...arraySinDuplicados] });
+          break;
+
+        case "array":
+          setJsonForm({
+            ...tipoDato,
+            type: "array",
+            title: campo,
+            items: {
+              type: "string",
+              enum: [...arraySinDuplicados],
+            },
+            uniqueItems: true
+          })
+
+          break;
+
+        case "dependencia":
+          setJsonForm({
+            title: campo,
+            type: "string",
+            enum: [...arraySinDuplicados]
+          });
+
+          dependencias = true;
+
+          break;
+
+        default:
+          setJsonForm({ ...tipoDato, title: campo, })
+          break;
+      }
+    }, [tipoDato, enumField])
+
+    const clickAgregarRegistro = () => {
+      campo == ""
+        ? message.warning('El nombre del campo no puede estar vacio')
+        : agregarNuevoCampo(campo, jsonForm, dependencias)
+      setEnumField("");
+    }
+
+    return (
+      <div className="flex flex-col">
+
+        {fasesEscalamiento.numero == 0
+          ? <CamposCrearForm
+            newSchema={newSchema}
+            setCampo={setCampo}
+            setTipoDato={setTipoDato}
+            tipoDato={tipoDato}
+            crearNuevoForm={crearNuevoForm}
+            setTitulo={setTitulo}
+            setEnumField={setEnumField}
+            enumField={enumField}
+            titulo={titulo}
+            campo={campo}
+            jsonForm={jsonForm}
+            clickAgregarRegistro={clickAgregarRegistro}
+            setNewSchema={setNewSchema}
+          />
+          : !fasesEscalamiento.dataFasesEscalamiento && <FasesEscalamiento />
+        }
+
+        {fasesEscalamiento.numero !== 0
+          ?
+          (guardandoJson
+            ?
+            <button
+              style={{ backgroundColor: verdeOscuro }
+              }
+              className="p-2 rounded-md text-white"
+            >
+              Guardando...
+            </button>
+            : fasesEscalamiento.dataFasesEscalamiento &&
+            < button
+              style={{ backgroundColor: verdeOscuro }}
+              className="p-2 rounded-md text-white"
+              onClick={() => {
+                Object.keys(editarFormulario.newSchema).length !== 0
+                  ? actualizarJSON()
+                  : guardarJSON()
+              }}>
+              Guardar formulario y finalizar
+            </button>)
+          :
+          (newSchema.title && Object.keys(newSchema.properties).length !== 0) &&
+          <button
+            style={{ backgroundColor: verdeOscuro }}
+            onClick={() => setFasesEscalamiento({
+              ...fasesEscalamiento,
+              numero: 1,
+              schema: {
+              }
+
+            })}
+            className="p-2 rounded-md text-white">
+            asignar fases de escalamiento
+          </button>
+        }
+
+      </div >
+    )
+  }
+
+
+    
+//</script>
