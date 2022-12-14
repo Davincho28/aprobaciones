@@ -49,13 +49,9 @@ const obtenerRol = () => {
 };
 
 const obtenerDominio = () => {
-  const usuarioActual = dataSheetdominios.find((dominios) => {
-    if (correo.split("@")[1] == dominios) {
-      return dominios;
-    } else {
-      return undefined;
-    }
-  });
+  const usuarioActual = dataSheetdominios.find(
+    (dominios) => correo.split("@")[1] == dominios
+  );
   if (usuarioActual) {
     const sheetdb = dataSheetUsuarios.find((usuario) => {
       if (usuario[3] == correo) {

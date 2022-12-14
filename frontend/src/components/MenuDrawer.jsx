@@ -1,13 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { HomeOutlined, AuditOutlined, FolderOpenOutlined, IdcardOutlined, UserOutlined } from '@ant-design/icons'
 import {
     BrowserRouter as Router,
     Routes,
     Route,
-    Link
+    Link,
+    useNavigate
 } from "react-router-dom";
 
 const MenuDrawer = () => {
+    const history = useNavigate()
+    useEffect(() => {
+        history('/inicio')
+    }, [])
+
     return (
         <div className="row-span-3 h-screen rounded-r-3xl bg-menudrawer w-full max-w-[306] sticky top-0">
             <img src='https://github.com/Davincho28/images/blob/main/Group%201334.png?raw=true'

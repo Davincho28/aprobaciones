@@ -1,11 +1,10 @@
-//<script type="text/jsx">
+import { createContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router';
 
-const DataContext = createContext();
+export const DataContext = createContext({});
 
 
-function DataProvider({ children }) {
-
-  const history = useHistory();
+export function DataProvider({ children }) {
 
   const [auth, setAuth] = useState({
     rol: "",
@@ -49,8 +48,8 @@ function DataProvider({ children }) {
   useEffect(() => {
 
     google.script.run
-      .withSuccessHandler((dominio) => {
-        setdominio(dominio)
+      .withSuccessHandler((respt) => {
+        setdominio(respt)
       })
       .obtenerDominio();
 
@@ -104,6 +103,3 @@ function DataProvider({ children }) {
     </DataContext.Provider>
   )
 }
-
-
-  //</script>
