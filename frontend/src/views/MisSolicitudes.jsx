@@ -165,7 +165,6 @@ const MisSolicitudes = () => {
                     />
                 </div>
             </div>
-
         </div >
     )
 }

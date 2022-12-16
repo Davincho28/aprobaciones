@@ -1,29 +1,57 @@
-import React, { useEffect, useState } from 'react'
-import { Spin } from 'antd'
+import React, { Fragment, useEffect, useState } from 'react'
+import VistaForm from '../components/VistaForm';
+import { GoogleOutlined, LeftOutlined } from '@ant-design/icons'
 
 const CrearSolicitud = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState("");
     const [viewform, setViewform] = useState();
     const [Editform, setEditform] = useState();
-    useEffect(() => {
+
+    const formularios = () => {
         google.script.run
             .withSuccessHandler((e) => { setData(e), setLoading('cargado') })
             .buscarinfo()
+    }
+
+    useEffect(() => {
+        formularios()
     }, [])
 
-    console.log(data.length)
-
     return (
-        <div className='w-screen h-screen ml-24'>
-            <h1
-                className='text-gray-700 font-bold text-3xl mt-14'>
-                Formulario de Solicitudes
-            </h1>
+        <div className='col-span-3 mt-10 rounded-xl border-2 mx-0 px-0'
+            style={{ height: "75vh" }}>
+            {
 
-            <div className="grid grid-cols-2 gap-4 mt-14">
+                !Editform ?
+                    <h1
+                        className='text-gray-700 font-bold text-3xl mt-12 ml-12'>
+                        Formulario de Solicitudes
+                    </h1>
+                    :
+                    <div className="flex mt-12 ml-12">
+                        <LeftOutlined
+                            onClick={() => {
+                                setLoading("")
+                                setEditform("")
+                                setViewform("")
+                                formularios()
+                            }}
+                            className='my-auto'
+                            style={{
+                                fontSize: '32px', color: '#008565'
+                            }} />
+                        <h1
+                            className='text-gray-700 font-bold text-3xl ml-5'>
+                            Requisición de personal
+                        </h1>
+                    </div>
+            }
+
+            <div className="gap-4 mt-14 ml-12 flex">
                 {
-                    data.length > 0 ?
+                    !Editform && loading == "cargado" &&
+                        data.length > 0 ?
                         data.map((fila) => (
                             <div
                                 key={fila.id_form}
@@ -42,10 +70,16 @@ const CrearSolicitud = () => {
                             </div>
                         ))
                         :
-                        <Spin size="large"
+                        loading == "" &&
+                        <GoogleOutlined spin
+                            style={{ fontSize: '32px', color: "#008565" }}
                             className='mx-auto' />
                 }
             </div>
+            {
+                Editform &&
+                <VistaForm form={{ viewform, Editform }} />
+            }
         </div>
     )
 }
