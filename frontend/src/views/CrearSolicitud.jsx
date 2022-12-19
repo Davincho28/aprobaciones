@@ -19,7 +19,7 @@ const CrearSolicitud = () => {
     }, [])
 
     return (
-        <div className='col-span-3 mt-10 rounded-xl border-2 mx-0 px-0'
+        <div className='md:col-span-3 mt-10 rounded-xl border-2'
             style={{ height: "75vh" }}>
             {
 

@@ -23,7 +23,7 @@ const Inicio = () => {
                         ¿Que haras hoy?
                     </h1>
 
-                    <Row gutter={[24, 16]} className='space-x-3 mt-[46]'>
+                    <Row gutter={[24, 16]} className='space-x-3 mt-11'>
                         <Link to={'/CrearSolicitud'}>
                             <Col className='border-2 border-gray-400 rounded-2xl flex flex-col items-center ml-3
                          hover:bg-gray-200 hover:border-green-700 w-[180] h-[180]'>
@@ -36,7 +36,7 @@ const Inicio = () => {
                         </Link>
 
                         <Link to={'/MisSolicitudes'}>
-                            <Col className='border-2 border-gray-400 rounded-2xl flex flex-col items-center ml-3
+                            <Col className='border-2 border-gray-400 rounded-2xl flex flex-col items-center
                          hover:bg-gray-200 hover:border-green-700 w-[180] h-[180]'>
                                 <svg width={'58px'} height={'75px'} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"
                                     className='mt-7'>

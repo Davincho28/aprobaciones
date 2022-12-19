@@ -9,8 +9,6 @@ import MisSolicitudes from './views/MisSolicitudes';
 
 const App = () => {
     const { auth, dominio } = useContext(DataContext)
-    console.log("dominio app: " + dominio)
-    console.log("auth app: " + auth)
     return (
         <BrowserRouter>
             <div className='max-h-screen overflow-hidden'>
