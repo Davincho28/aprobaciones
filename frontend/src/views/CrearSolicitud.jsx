@@ -66,7 +66,7 @@ const CrearSolicitud = () => {
                                     className='my-auto ml-9'>
                                     <path d="M60 30V40M60 40V50M60 40H70M60 40H50M43.3333 23.3333C43.3333 30.6971 37.3638 36.6667 30 36.6667C22.6362 36.6667 16.6667 30.6971 16.6667 23.3333C16.6667 15.9695 22.6362 10 30 10C37.3638 10 43.3333 15.9695 43.3333 23.3333ZM10 66.6667C10 55.621 18.9543 46.6667 30 46.6667C41.0457 46.6667 50 55.621 50 66.6667V70H10V66.6667Z" stroke="#40A38B" strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
-                                <h3 className="text-center text-xl my-auto ml-[27]">Requisición de personal</h3>
+                                <h3 className="text-center text-xl my-auto ml-[27]">{fila.nombre_form}</h3>
                             </div>
                         ))
                         :

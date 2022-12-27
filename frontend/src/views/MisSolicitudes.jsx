@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Form, Input, Pagination, } from 'antd';
 import FormItem from 'antd/es/form/FormItem';
 import ModalDetalles from '../components/ModalDetalles';
@@ -7,62 +7,52 @@ const MisSolicitudes = () => {
 
     const [prevPage, setPrevPage] = useState(5);
     const [busqueda, setBusqueda] = useState("");
-    const [filtrado, setFiltrado] = useState();
+    const [filtrado, setFiltrado] = useState([]);
     const [visible1, setVisible1] = useState(false);
+    const [datosSolicitudes, setDatosSolicitudes] = useState([]);
     const [idSolicitud, setIdSolicitud] = useState("");
-    const pruebas = [
-        {
-            tipoSolicitud: "nose",
-            fechaSolicitud: "loquesea",
-            estado: "tistes"
-        },
-        {
-            tipoSolicitud: "nose",
-            fechaSolicitud: "loquesea",
-            estado: "tistes"
-        },
-        {
-            tipoSolicitud: "nose",
-            fechaSolicitud: "loquesea",
-            estado: "tistes"
-        },
-        {
-            tipoSolicitud: "nose",
-            fechaSolicitud: "loquesea",
-            estado: "tistes"
-        },
-        {
-            tipoSolicitud: "nose",
-            fechaSolicitud: "loquesea",
-            estado: "tistes"
-        },
-    ]
+    const [correo, setCorreo] = useState("")
+
+    useEffect(() => {
+        //    obteniendo informacion de solicitudes con la api de google script run
+        google.script.run
+            .withSuccessHandler(res => setDatosSolicitudes(res))
+            .withFailureHandler(err => console.log(err))
+            .informacionSolicitudes();
+
+        //    obteniendo informacion del correo con la api de google script run
+        google.script.run.
+            withSuccessHandler(res => setCorreo(res))
+            .withFailureHandler(err => console.log(err))
+            .obtenerCorreo()
+
+    }, [])
 
     const buscando = (e) => {
         setBusqueda(e.target.value)
         setFiltrado(filtrar(e.target.value));
     }
+
     const filtrar = (terminoBusqueda) => {
-        var resultadosbusqueda = pruebas.filter((elemento) => {
-            if (elemento.fechaSolicitud.toString().toLowerCase().includes(terminoBusqueda.toLowerCase()) ||
-                elemento.estado.toString().toLowerCase().includes(terminoBusqueda.toLowerCase())) {
+        var resultadosbusqueda = datosSolicitudes.filter((elemento) => {
+            if (elemento[1].toString().toLowerCase().includes(terminoBusqueda.toLowerCase()) ||
+                elemento[2].toString().toLowerCase().includes(terminoBusqueda.toLowerCase())) {
                 return elemento
             }
         })
         return resultadosbusqueda
     }
 
-    const numdatos = pruebas.slice(prevPage - 5, prevPage)
+    const numdatos = datosSolicitudes.slice(prevPage - 5, prevPage)
+    const numdatosfiltrados = filtrado.slice(prevPage - 5, prevPage)
 
     const nextpage = (e) => {
         setPrevPage(e * 5)
     }
 
-    console.log(filtrado)
-
     return (
         <div className='md:col-span-3 mr-20 border-2 mt-5 rounded-xl'>
-            <ModalDetalles open={visible1} setVisible1={setVisible1} idSolicitud={idSolicitud} />
+            {visible1 && <ModalDetalles open={visible1} setVisible1={setVisible1} idSolicitud={idSolicitud} />}
             <h1
                 className='text-gray-500 text-2xl mt-8 font-bold px-5'
             >
@@ -81,7 +71,7 @@ const MisSolicitudes = () => {
             </div>
             <div className='mt-10 ml-8 mr-8'>
                 {
-                    pruebas ?
+                    datosSolicitudes ?
                         <table className='w-full'>
                             <thead>
                                 <tr className='text-gray-500'>
@@ -94,15 +84,15 @@ const MisSolicitudes = () => {
 
                             <tbody>
                                 {
-                                    !filtrado ?
-                                        numdatos.map(({ tipoSolicitud, fechaSolicitud, estado }, index) => (
-                                            <tr key={index}>
-                                                <td>{tipoSolicitud}</td>
-                                                <td>{fechaSolicitud}</td>
-                                                <td>{estado}</td>
+                                    (filtrado.length == 0) ?
+                                        numdatos.map((elemento) => (
+                                            <tr key={elemento[4]}>
+                                                <td>{elemento[2]}</td>
+                                                <td>{elemento[1]}</td>
+                                                <td>xd</td>
                                                 <td>
                                                     <button className="flex mx-auto items-center h-6 bg-green-900 text-white hover:bg-green-700 hover:text-black px-5 rounded-xl"
-                                                        onClick={() => setVisible1(true)}>
+                                                        onClick={() => { setIdSolicitud(elemento[4]), setVisible1(true) }}>
                                                         <svg width={26} height={26} viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                             <g clipPath="url(#clip0_53_8)">
                                                                 <path d="M12.9999 7.04167C17.1058 7.04167 20.7674 9.34917 22.5549 13C20.7674 16.6508 17.1166 18.9583 12.9999 18.9583C8.88325 18.9583 5.23242 16.6508 3.44492 13C5.23242 9.34917 8.89409 7.04167 12.9999 7.04167ZM12.9999 4.875C7.58325 4.875 2.95742 8.24417 1.08325 13C2.95742 17.7558 7.58325 21.125 12.9999 21.125C18.4166 21.125 23.0424 17.7558 24.9166 13C23.0424 8.24417 18.4166 4.875 12.9999 4.875ZM12.9999 10.2917C14.4949 10.2917 15.7083 11.505 15.7083 13C15.7083 14.495 14.4949 15.7083 12.9999 15.7083C11.5049 15.7083 10.2916 14.495 10.2916 13C10.2916 11.505 11.5049 10.2917 12.9999 10.2917ZM12.9999 8.125C10.3133 8.125 8.12492 10.3133 8.12492 13C8.12492 15.6867 10.3133 17.875 12.9999 17.875C15.6866 17.875 17.8749 15.6867 17.8749 13C17.8749 10.3133 15.6866 8.125 12.9999 8.125Z" fill="white" />
@@ -118,13 +108,14 @@ const MisSolicitudes = () => {
                                             </tr>
                                         ))
                                         :
-                                        filtrado.map(({ tipoSolicitud, fechaSolicitud, estado }, index) => (
-                                            <tr key={index}>
-                                                <td>{tipoSolicitud}</td>
-                                                <td>{fechaSolicitud}</td>
-                                                <td>{estado}</td>
+                                        numdatosfiltrados.map((elemento) => (
+                                            <tr key={elemento[4]}>
+                                                <td>{elemento[2]}</td>
+                                                <td>{elemento[1]}</td>
+                                                <td>xd</td>
                                                 <td>
-                                                    <button className="flex mx-auto items-center h-6 bg-green-900 text-white hover:bg-green-700 hover:text-black px-5 rounded-xl">
+                                                    <button className="flex mx-auto items-center h-6 bg-green-900 text-white hover:bg-green-700 hover:text-black px-5 rounded-xl"
+                                                        onClick={() => setVisible1(true)}>
                                                         <svg width={26} height={26} viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                             <g clipPath="url(#clip0_53_8)">
                                                                 <path d="M12.9999 7.04167C17.1058 7.04167 20.7674 9.34917 22.5549 13C20.7674 16.6508 17.1166 18.9583 12.9999 18.9583C8.88325 18.9583 5.23242 16.6508 3.44492 13C5.23242 9.34917 8.89409 7.04167 12.9999 7.04167ZM12.9999 4.875C7.58325 4.875 2.95742 8.24417 1.08325 13C2.95742 17.7558 7.58325 21.125 12.9999 21.125C18.4166 21.125 23.0424 17.7558 24.9166 13C23.0424 8.24417 18.4166 4.875 12.9999 4.875ZM12.9999 10.2917C14.4949 10.2917 15.7083 11.505 15.7083 13C15.7083 14.495 14.4949 15.7083 12.9999 15.7083C11.5049 15.7083 10.2916 14.495 10.2916 13C10.2916 11.505 11.5049 10.2917 12.9999 10.2917ZM12.9999 8.125C10.3133 8.125 8.12492 10.3133 8.12492 13C8.12492 15.6867 10.3133 17.875 12.9999 17.875C15.6866 17.875 17.8749 15.6867 17.8749 13C17.8749 10.3133 15.6866 8.125 12.9999 8.125Z" fill="white" />
@@ -166,12 +157,12 @@ const MisSolicitudes = () => {
                 }
 
                 {
-                    pruebas &&
+                    datosSolicitudes.length > 0 &&
                     <div className='flex pb-3'>
                         <Pagination
                             onChange={nextpage}
                             size="small"
-                            total={50}
+                            total={filtrado.length > 0 ? filtrado.length : datosSolicitudes.length}
                             className="mx-auto"
                         />
                     </div>
