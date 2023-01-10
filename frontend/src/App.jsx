@@ -6,12 +6,13 @@ import Inicio from './views/Inicio';
 import MenuDrawer from './components/MenuDrawer';
 import CrearSolicitud from './views/CrearSolicitud';
 import MisSolicitudes from './views/MisSolicitudes';
+import Usuarios from './views/Usuarios';
 
 const App = () => {
     const { auth, dominio } = useContext(DataContext)
     return (
         <BrowserRouter>
-            <div className='max-h-screen overflow-hidden'>
+            <div className='max-h-screen overflow-y-scroll'>
                 <div className="grid md:grid-cols-4 grid-cols-2 h-full">
                     {
                         dominio != 'cargando' &&
@@ -26,6 +27,7 @@ const App = () => {
                         <Route path='/inicio' element={<Inicio />}></Route>
                         <Route path='/CrearSolicitud' element={<CrearSolicitud />}></Route>
                         <Route path='/MisSolicitudes' element={<MisSolicitudes />}></Route>
+                        <Route path='/Usuarios' element={<Usuarios />}></Route>
                     </Routes>
                 </div>
             </div>

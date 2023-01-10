@@ -41,8 +41,19 @@ const verSolicitudesId = (id) =>
   dataSheetSolicitudes.filter((solicitud) => solicitud[4] == id);
 
 // funcion para ver el seguimiento de las solicitudes
-const informacionSolicitudes = () =>
-  dataSheetSolicitudes.filter((elemento) => elemento[0] == correo);
+const informacionSolicitudes = () => {
+  const solici = dataSheetSolicitudes.filter((element) => element[0] == correo);
+  const soliciEstado = solici.map((element) => {
+    const idsoli = element[4];
+    const estadoSolicitud = dataSheetEstadoSolicitudes
+      .filter((e) => idsoli == e[0])
+      .pop();
+    element.push(estadoSolicitud[1]);
+    return element;
+  });
+  return soliciEstado;
+};
+// dataSheetSolicitudes.filter((elemento) => elemento[0] == correo);
 
 const misSolicitudes = (id) => {
   const datos = dataSheetEstadoSolicitudes.filter((e) => e[0] == id);

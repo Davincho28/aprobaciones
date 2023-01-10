@@ -51,7 +51,10 @@ const ModalDetalles = ({ open, setVisible1, idSolicitud }) => {
 
                 {
                     estadoDetalleMiSolicitud[0] == "" ?
-                        <Spin />
+                        <div className='flex justify-center'>
+                            <Spin />
+                        </div>
+
                         :
                         estadoDetalleMiSolicitud.map((element, index) => (
                             <Fragment key={index}>

@@ -5,4 +5,7 @@ import { DataProvider } from "./context/DataContext";
 
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<DataProvider><App /></DataProvider>);
+root.render(
+    <DataProvider>
+        <App />
+    </DataProvider>);

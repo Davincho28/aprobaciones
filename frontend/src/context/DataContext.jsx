@@ -1,3 +1,4 @@
+import { ConfigProvider } from 'antd';
 import { createContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router';
 
@@ -61,12 +62,6 @@ export function DataProvider({ children }) {
       .withSuccessHandler(setLideractivo)
       .buscarlideres()
 
-    // petición para traer la lista de lideres y guardarlas en un estado global
-    google.script
-      .run
-      .withSuccessHandler(guardarListaLideres)
-      .listaLideres();
-
     google.script
       .run
       .withSuccessHandler(roles =>
@@ -98,8 +93,13 @@ export function DataProvider({ children }) {
   }
 
   return (
-    <DataContext.Provider value={store}>
-      {children}
-    </DataContext.Provider>
+    <ConfigProvider
+      theme={{
+        token: { colorPrimary: "#00B086" }
+      }}>
+      <DataContext.Provider value={store}>
+        {children}
+      </DataContext.Provider>
+    </ConfigProvider>
   )
 }
